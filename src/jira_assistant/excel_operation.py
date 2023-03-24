@@ -78,10 +78,7 @@ def read_excel_file(
 
     # The count of column is taking from the definition file to avoid too many columns inside the excel file.
     # Also, need to avoid exceed the range of the actual count.
-    if excel_definition.max_column_index > sheet.max_column:
-        column_count = sheet.max_column
-    else:
-        column_count = excel_definition.max_column_index
+    column_count = min(excel_definition.max_column_index, sheet.max_column)
 
     if sheet.max_row < 2:
         wb.close()

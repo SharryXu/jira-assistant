@@ -292,10 +292,8 @@ def update_jira_info():
 
                 if result is True:
                     print("Add/Update jira url success!")
-                    quit(0)
                 else:
                     print("Add/Update jira url failed!")
-                    quit(1)
 
         # ACCESS TOKEN Part
         if args.access_token is not None:
