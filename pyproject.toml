@@ -1,0 +1,42 @@
+[build-system]
+requires      = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jira-assistant"
+version = "0.1.0"
+description = "Useful Jira tools"
+readme = "README.rst"
+authors = [{ name = "Sharry Xu", email = "sharry.xu@outlook.com" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+keywords = ["jira", "excel", "jira-cloud"]
+dependencies = [
+    "openpyxl >= 3.0.10",
+    "python-dateutil >= 2.8.2",
+    "python-dotenv >= 0.21.1",
+    "requests >= 2.28.2",
+    'tomli; python_version < "3.11"',
+]
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+dev = ["pip-tools", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/SharryXu/jira-assistant"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"jira_assistant.assets" = ["*.json", "*.conf"]
+
+[project.scripts]
+sort-excel-file = "jira_assistant:sort_excel_file"
+generate-template = "jira_assistant:generate_template"
+update-jira-info = "jira_assistant:update_jira_info"
