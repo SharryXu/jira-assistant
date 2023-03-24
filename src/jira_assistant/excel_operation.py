@@ -71,6 +71,7 @@ def read_excel_file(
     if wb.active is None or (
         type(wb.active) is not Worksheet and type(wb.active) is not ReadOnlyWorksheet
     ):
+        wb.close()
         raise ValueError("The input excel file doesn't contain any sheets.")
 
     sheet: Worksheet = wb.active
@@ -82,29 +83,21 @@ def read_excel_file(
     else:
         column_count = excel_definition.max_column_index
 
-    max_column_index = chr(65 + column_count - 1)
+    if sheet.max_row < 2:
+        wb.close()
+        return ([], [])
 
-    start_column = "A1"
-    end_column = f"{max_column_index}1"
     columns: list[str] = []
 
-    for cells in sheet[start_column:end_column]:
-        if len(columns) > 0:
-            break
-        for cell in cells:
-            # TODO: Copy styles
-            columns.append(cell.value)
-
-    start_cell = "A2"
-    end_cell = f"{max_column_index}{sheet.max_row}"
-    rows = sheet[start_cell:end_cell]
+    for column_index in range(1, column_count + 1):
+        columns.append(str(sheet.cell(row=1, column=column_index).value))
 
     stories = []
 
     excel_definition_columns = excel_definition.get_columns()
     storyFactory = StoryFactory(excel_definition_columns)
 
-    for row in rows:
+    for row in sheet.iter_rows(min_row=2):
         if _should_skip(row):
             continue
 
@@ -122,7 +115,7 @@ def read_excel_file(
     return (columns, stories)
 
 
-def _should_skip(row: list) -> bool:
+def _should_skip(row: tuple) -> bool:
     if len(row) == 0:
         return True
     else:
