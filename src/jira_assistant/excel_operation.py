@@ -25,7 +25,7 @@ __all__ = [
     "read_excel_file",
     "output_to_excel_file",
     "output_to_csv_file",
-    "process_excel_file",
+    "run_steps_and_sort_excel_file",
 ]
 
 # Currently, the openpyxl package will report an obsolete warning.
@@ -181,10 +181,13 @@ def output_to_excel_file(
         else:
             raise ValueError(f"The output excel file: {file} is already exist.")
 
-    wb = openpyxl.Workbook()
+    wb = openpyxl.Workbook(write_only=False)
 
-    if wb.active is None or type(wb.active) is not Worksheet:
-        raise ValueError("The output file doesn't contain any active sheets.")
+    if wb.active is None or (
+        type(wb.active) is not Worksheet and type(wb.active) is not Worksheet
+    ):
+        wb.close()
+        raise ValueError("The output excel file cannot be generated.")
 
     sheet: Worksheet = wb.active
 
@@ -299,7 +302,7 @@ def _query_jira_information(stories: list[Story], excel_definition: ExcelDefinit
                 continue
 
 
-def process_excel_file(
+def run_steps_and_sort_excel_file(
     input_file: "str | Path",
     output_file: "str | Path",
     excel_definition_file: "str | Path | None" = None,

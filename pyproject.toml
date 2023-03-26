@@ -38,6 +38,6 @@ where = ["src"]
 "jira_assistant.assets" = ["*.json", "*.conf"]
 
 [project.scripts]
-sort-excel-file = "jira_assistant:sort_excel_file"
+process-excel-file = "jira_assistant:process_excel_file"
 generate-template = "jira_assistant:generate_template"
 update-jira-info = "jira_assistant:update_jira_info"

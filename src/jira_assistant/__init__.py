@@ -2,13 +2,13 @@
 from importlib import metadata
 from importlib.metadata import version
 
-from .console_script import generate_template, sort_excel_file, update_jira_info
+from .console_script import generate_template, process_excel_file, update_jira_info
 from .excel_definition import ExcelDefinition, ExcelDefinitionColumn
 from .excel_operation import (
     output_to_csv_file,
     output_to_excel_file,
-    process_excel_file,
     read_excel_file,
+    run_steps_and_sort_excel_file,
 )
 from .milestone import Milestone
 from .priority import Priority
@@ -28,7 +28,7 @@ __all__ = [
     "read_excel_file",
     "output_to_csv_file",
     "output_to_excel_file",
-    "process_excel_file",
+    "run_steps_and_sort_excel_file",
     "Milestone",
     "Priority",
     "SprintScheduleStore",
@@ -36,7 +36,7 @@ __all__ = [
     "StoryFactory",
     "sort_stories_by_property_and_order",
     "sort_stories_by_raise_ranking",
-    "sort_excel_file",
+    "process_excel_file",
     "generate_template",
     "update_jira_info",
 ]

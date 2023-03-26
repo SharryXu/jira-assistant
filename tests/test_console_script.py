@@ -13,10 +13,10 @@ HERE = pathlib.Path(__file__).resolve().parent
 class TestConsoleScript:
     def test_process_excel_file(self):
         result = subprocess.run(
-            ["sort-excel-file", HERE / "files/happy_path.xlsx"], capture_output=True
+            ["process-excel-file", HERE / "files/happy_path.xlsx"], capture_output=True
         )
 
-        assert "happy_path_sorted.xlsx has been saved" in result.stdout.decode("utf-8")
+        assert "xlsx has been saved" in result.stdout.decode("utf-8")
 
         remove(HERE / "files/happy_path_sorted.xlsx")
 

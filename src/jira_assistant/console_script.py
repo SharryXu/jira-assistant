@@ -11,14 +11,14 @@ from pathlib import Path
 from urllib.parse import ParseResult, urlparse
 
 from .excel_definition import ExcelDefinition
-from .excel_operation import output_to_excel_file, process_excel_file
+from .excel_operation import output_to_excel_file, run_steps_and_sort_excel_file
 
-__all__ = ["sort_excel_file", "generate_template", "update_jira_info"]
+__all__ = ["process_excel_file", "generate_template", "update_jira_info"]
 
 
-def get_args_for_sort_excel_file() -> Namespace:
+def get_args_for_process_excel_file() -> Namespace:
     parser = ArgumentParser(
-        description="Jira tool: Used to sort stories",
+        description="Jira tool: Used to pre-process and sort stories",
         formatter_class=ArgumentDefaultsHelpFormatter,
     )
 
@@ -60,9 +60,9 @@ def get_args_for_sort_excel_file() -> Namespace:
     return args
 
 
-def sort_excel_file() -> None:
+def process_excel_file() -> None:
     try:
-        args = get_args_for_sort_excel_file()
+        args = get_args_for_process_excel_file()
 
         # Pre-Process input file
         input_file_absolute_path: pathlib.Path = (
@@ -147,7 +147,7 @@ def sort_excel_file() -> None:
         if args.over_write is not None:
             over_write = args.over_write
 
-        process_excel_file(
+        run_steps_and_sort_excel_file(
             input_file_absolute_path,
             output_file_absolute_path,
             excel_definition_file_absolute_path,
