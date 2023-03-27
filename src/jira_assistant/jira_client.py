@@ -2,9 +2,16 @@
 """
 This module is used to store excel column definition information.
 """
+import warnings
 from typing import Any
 
 from jira import JIRA, JIRAError
+from urllib3 import disable_warnings
+
+# Currently, the openpyxl package will report an obsolete warning.
+warnings.simplefilter(action="ignore", category=UserWarning)
+# Disable the HTTPS certificate verification warning.
+disable_warnings()
 
 
 class JiraClient:
