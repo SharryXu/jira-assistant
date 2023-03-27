@@ -36,15 +36,23 @@ def parse_json_item_to_pre_process_step(json_item: Any) -> PreProcessStep:
 
     for key, value in json_item.items():
         if key.lower() == "name".lower():
-            if type(value) is str:
+            if value is None:
+                raise ValueError("The pre-process step must have a name.")
+            elif type(value) is str:
                 pre_process_step_name = value
             else:
-                raise TypeError("The Name property type should be string.")
+                raise TypeError(
+                    "The Name property type in the pre-process step should be string."
+                )
         if key.lower() == "enabled".lower():
-            if type(value) is bool:
+            if value is None:
+                pre_process_step_enabled = False
+            elif type(value) is bool:
                 pre_process_step_enabled = value
             else:
-                raise TypeError("The Enabled property type should be boolean.")
+                raise TypeError(
+                    "The Enabled property type in the pre-process step should be boolean."
+                )
         if key.lower() == "config".lower():
             pre_process_step_config = {}
             if value is not None and type(value) is dict:
@@ -75,21 +83,32 @@ def parse_json_item_to_sort_strategy(json_item: Any) -> SortStrategy:
 
     for key, value in json_item.items():
         if key.lower() == "name".lower():
-            if type(value) is str:
+            if value is None:
+                raise ValueError("The sort strategy must have a name.")
+            elif type(value) is str:
                 strategy_name = value
             else:
-                raise TypeError("The Name property type should be string.")
+                raise TypeError(
+                    "The Name property type in the sort strategy should be string."
+                )
         if key.lower() == "priority".lower():
-            if type(value) is int:
+            if value is None:
+                strategy_priority = 0
+            elif type(value) is int:
                 strategy_priority = value
             else:
-                raise TypeError("The Priority property type should be integer.")
+                raise TypeError(
+                    "The Priority property type in the sort strategy should be integer."
+                )
         if key.lower() == "enabled".lower():
-            # TODO: Some basic error should be through now???
-            if type(value) is bool:
+            if value is None:
+                strategy_enabled = False
+            elif type(value) is bool:
                 strategy_enabled = value
             else:
-                raise TypeError("The Enabled property type should be boolean.")
+                raise TypeError(
+                    "The Enabled property type in the sort strategy should be boolean."
+                )
         if key.lower() == "config".lower():
             strategy_config = {}
             if value is not None and type(value) is dict:
@@ -112,7 +131,7 @@ def parse_json_item_to_sort_strategy(json_item: Any) -> SortStrategy:
 
 class ExcelDefinitionColumn(TypedDict):
     index: int
-    name: str | NoneType
+    name: str
     type: type | NoneType
     require_sort: bool
     sort_order: bool
@@ -126,7 +145,7 @@ class ExcelDefinitionColumn(TypedDict):
 
 def parse_json_item_to_excel_definition_column(json_item: Any) -> ExcelDefinitionColumn:
     column_index = 0
-    column_name = None
+    column_name = ""
     column_type = None
     column_require_sort = False
     column_sort_order = False
@@ -139,26 +158,40 @@ def parse_json_item_to_excel_definition_column(json_item: Any) -> ExcelDefinitio
 
     for key, value in json_item.items():
         if key.lower() == "index".lower():
-            column_index = value
-        if key.lower() == "name".lower():
-            column_name = value
-        if key.lower() == "type".lower():
+            if value is None:
+                raise ValueError("Column definition must has an index.")
+            elif type(value) is int:
+                column_index = value
+            else:
+                raise TypeError(
+                    "The Index property type in the column definition is not integer."
+                )
+        elif key.lower() == "name".lower():
+            if value is None:
+                raise ValueError("Column definition must has a name.")
+            elif type(value) is str:
+                column_name = value
+            else:
+                raise TypeError(
+                    "The Name property type in the column definition should be string."
+                )
+        elif key.lower() == "type".lower():
             column_type = ExcelDefinition.convert_str_to_type(value)
-        if key.lower() == "RequireSort".lower():
+        elif key.lower() == "RequireSort".lower():
             column_require_sort = value
-        if key.lower() == "SortOrder".lower():
+        elif key.lower() == "SortOrder".lower():
             column_sort_order = value
-        if key.lower() == "ScopeRequireSort".lower():
+        elif key.lower() == "ScopeRequireSort".lower():
             column_scope_require_sort = value
-        if key.lower() == "ScopeSortOrder".lower():
+        elif key.lower() == "ScopeSortOrder".lower():
             column_scope_sort_order = value
-        if key.lower() == "InlineWeights".lower():
+        elif key.lower() == "InlineWeights".lower():
             column_inline_weights = value
-        if key.lower() == "RaiseRanking".lower():
+        elif key.lower() == "RaiseRanking".lower():
             column_raise_ranking = value
-        if key.lower() == "ScopeRaiseRanking".lower():
+        elif key.lower() == "ScopeRaiseRanking".lower():
             column_scope_raise_ranking = value
-        if key.lower() == "JiraFieldMapping".lower():
+        elif key.lower() == "JiraFieldMapping".lower():
             column_jira_field_mapping = value
 
     return ExcelDefinitionColumn(
@@ -214,6 +247,8 @@ class ExcelDefinition:
                     self.columns.append(
                         parse_json_item_to_excel_definition_column(item)
                     )
+        except TypeError or ValueError:
+            raise
         except Exception:
             raise ValueError(
                 "The JSON structure of the excel definition file is wrong. Please check the documentation: https://github.com/SharryXu/jira-assistant"
@@ -273,12 +308,7 @@ class ExcelDefinition:
 
         # Validate PreProcessSteps
         for pre_process_step in self.pre_process_steps:
-            if (
-                pre_process_step["name"] is None
-                or type(pre_process_step["name"]) is not str
-                or pre_process_step["name"].isspace()
-                or len(pre_process_step["name"]) == 0
-            ):
+            if pre_process_step["name"].isspace() or len(pre_process_step["name"]) == 0:
                 invalid_definitions.append(f"The PreProcessStep name is invalid.")
                 # If strategy name is invalid, no need to check more.
                 continue
@@ -308,12 +338,7 @@ class ExcelDefinition:
         # Validate Strategies
         strategy_priorities: list[int] = []
         for strategy in self.sort_strategies:
-            if (
-                strategy["name"] is None
-                or type(strategy["name"]) is not str
-                or strategy["name"].isspace()
-                or len(strategy["name"]) == 0
-            ):
+            if strategy["name"].isspace() or len(strategy["name"]) == 0:
                 invalid_definitions.append(f"The strategy name is invalid.")
                 # If strategy name is invalid, no need to check more.
                 continue
@@ -359,7 +384,7 @@ class ExcelDefinition:
         exist_inline_weights = []
         for column in self.get_columns():
             column_index: int = column["index"]
-            column_name: str | None = column["name"]
+            column_name: str = column["name"]
             column_type: type | None = column["type"]
             column_require_sort: bool = column["require_sort"]
             column_sort_order: bool = column["sort_order"]
@@ -371,7 +396,7 @@ class ExcelDefinition:
             column_jira_field_mapping: dict | None = column["jira_field_mapping"]
 
             # Check Name cannot be empty
-            if type(column_name) is not str or len(column_name) == 0:
+            if len(column_name) == 0:
                 invalid_definitions.append(
                     f"Column name cannot be empty. Index: {column_index}"
                 )

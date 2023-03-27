@@ -2,10 +2,10 @@
 """
 This module offers a set of operations that user can modify their excel files.
 """
-import os
 import pathlib
 import warnings
 from importlib.resources import files
+from os import environ, remove
 from pathlib import Path
 
 import openpyxl
@@ -64,51 +64,56 @@ def read_excel_file(
     if not pathlib.Path(file).exists():
         raise ValueError(f"The input excel file: {file} cannot be found.")
 
-    wb: Workbook = openpyxl.load_workbook(
-        str(file), read_only=True, keep_vba=False, data_only=True, keep_links=True
-    )
+    with open(str(file), mode="rb") as raw_file:
+        wb: Workbook = openpyxl.load_workbook(
+            raw_file, read_only=True, keep_vba=False, data_only=True, keep_links=True
+        )
 
-    if wb.active is None or (
-        type(wb.active) is not Worksheet and type(wb.active) is not ReadOnlyWorksheet
-    ):
-        wb.close()
-        raise ValueError("The input excel file doesn't contain any sheets.")
+        if wb.active is None or (
+            type(wb.active) is not Worksheet
+            and type(wb.active) is not ReadOnlyWorksheet
+        ):
+            wb.close()
+            raise ValueError("The input excel file doesn't contain any sheets.")
 
-    sheet: Worksheet = wb.active
+        sheet: Worksheet = wb.active
 
-    # The count of column is taking from the definition file to avoid too many columns inside the excel file.
-    # Also, need to avoid exceed the range of the actual count.
-    column_count = min(excel_definition.max_column_index, sheet.max_column)
+        # The count of column is taking from the definition file to avoid too many columns inside the excel file.
+        # Also, need to avoid exceed the range of the actual count.
+        column_count = min(excel_definition.max_column_index, sheet.max_column)
 
-    if sheet.max_row < 2:
-        wb.close()
-        return ([], [])
+        if sheet.max_row < 2:
+            wb.close()
+            return ([], [])
 
-    columns: list[str] = []
+        columns: list[str] = []
 
-    for column_index in range(1, column_count + 1):
-        columns.append(str(sheet.cell(row=1, column=column_index).value))
+        for column_index in range(1, column_count + 1):
+            columns.append(str(sheet.cell(row=1, column=column_index).value))
 
-    stories = []
+        stories = []
 
-    excel_definition_columns = excel_definition.get_columns()
-    storyFactory = StoryFactory(excel_definition_columns)
+        excel_definition_columns = excel_definition.get_columns()
+        storyFactory = StoryFactory(excel_definition_columns)
 
-    for row in sheet.iter_rows(min_row=2):
-        if _should_skip(row):
-            continue
-
-        story: Story = storyFactory.create_story()
-        for column_index in range(len(row)):
-            column = excel_definition_columns[column_index]
-            if column["name"] is None:
+        for row in sheet.iter_rows(
+            min_row=2, max_row=sheet.max_row, min_col=1, max_col=len(columns)
+        ):
+            if _should_skip(row):
                 continue
-            story.set_value(column["type"], column["name"], row[column_index].value)
 
-        story.calc_sprint_schedule(sprint_schedule)
-        stories.append(story)
+            story: Story = storyFactory.create_story()
+            for column_index in range(len(row)):
+                column = excel_definition_columns[column_index]
+                if column["name"] is None:
+                    continue
+                story.set_value(column["type"], column["name"], row[column_index].value)
 
-    wb.close()
+            story.calc_sprint_schedule(sprint_schedule)
+            stories.append(story)
+
+        wb.close()
+        raw_file.close()
     return (columns, stories)
 
 
@@ -132,7 +137,7 @@ def output_to_csv_file(
 
     if not pathlib.Path(file).exists():
         if over_write is True:
-            os.remove(file)
+            remove(file)
         else:
             raise ValueError(f"The csv file: {file} is already exist.")
 
@@ -174,7 +179,7 @@ def output_to_excel_file(
     if pathlib.Path(file).exists():
         if over_write is True:
             try:
-                os.remove(file)
+                remove(file)
             except PermissionError as e:
                 print(e)
                 return
@@ -225,7 +230,7 @@ def _query_jira_information(stories: list[Story], excel_definition: ExcelDefinit
 
     load_dotenv(ASSETS / ".env")
 
-    jira_url: str | None = os.environ.get("JIRA_URL", default=None)
+    jira_url: str | None = environ.get("JIRA_URL", default=None)
     if (
         # TODO: Avoid duplicate logic.
         jira_url is None
@@ -237,7 +242,7 @@ def _query_jira_information(stories: list[Story], excel_definition: ExcelDefinit
         )
         return
 
-    jira_acccess_token: str | None = os.environ.get("JIRA_ACCESS_TOKEN", default=None)
+    jira_acccess_token: str | None = environ.get("JIRA_ACCESS_TOKEN", default=None)
     if (
         jira_acccess_token is None
         or jira_acccess_token.isspace()

@@ -92,11 +92,8 @@ class TestExcelDefinition:
     def test_validate_invalid_name(self):
         excel_definition_filename = TEST_ASSETS / "excel_definition_invalid_name.json"
         store = ExcelDefinition()
-        store.load_file(excel_definition_filename)
-
-        validation_result = store.validate()
-
-        assert len(validation_result) == 2
+        with pytest.raises(TypeError) as err:
+            store.load_file(excel_definition_filename)
 
     def test_validate_invalid_raise_ranking(self):
         excel_definition_filename = (
@@ -132,11 +129,8 @@ class TestExcelDefinition:
     def test_validate_invalid_index(self):
         excel_definition_filename = TEST_ASSETS / "excel_definition_invalid_index.json"
         store = ExcelDefinition()
-        store.load_file(excel_definition_filename)
-
-        validation_result = store.validate()
-
-        assert len(validation_result) == 2
+        with pytest.raises(TypeError) as err:
+            store.load_file(excel_definition_filename)
 
     def test_validate_index_not_continuation(self):
         excel_definition_filename = (
