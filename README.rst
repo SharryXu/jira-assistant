@@ -54,14 +54,14 @@ You can run below command in the PowerShell (Windows OS) or Shell (UNIX OS) to p
 
 .. code-block:: console
 
-    sort-excel-file source.xlsx
+    process-excel-file source.xlsx
 
 After that, you can find the output file in the same folder along with the source file. 
 For more details, please check the help message like below:
 
 .. code-block:: console
 
-    sort-excel-file -h
+    process-excel-file -h
 
 Currently, we are using the `jira access token`__ to do the validation and that means we need you to generate your own access token from the website first.
 
@@ -92,9 +92,9 @@ Here's a simple program, just to give you an idea about how to use this package.
 .. code-block:: python
 
   import pathlib
-  from jira_assistant import process_excel_file
+  from jira_assistant import run_steps_and_sort_excel_file
   HERE = pathlib.Path().resolve()
-  process_excel_file(HERE / "source.xlsx", HERE / "target.xlsx")
+  run_steps_and_sort_excel_file(HERE / "source.xlsx", HERE / "target.xlsx")
 
 If you want to customize the definition file to adapt the new Excel, you can do below steps.
 
@@ -177,11 +177,11 @@ If you want to customize the definition file to adapt the new Excel, you can do 
       }
   ]
 
-2. Indicating the definition file location to the :code:`process_excel_file` method like below.
+2. Indicating the definition file location to the :code:`run_steps_and_sort_excel_file` method like below.
 
 .. code-block:: python
 
-  process_excel_file(
+  run_steps_and_sort_excel_file(
       HERE / "source.xlsx", 
       HERE / "target.xlsx", 
       excel_definition_file=HERE / "definition_file.json"
@@ -204,7 +204,7 @@ Meantime, you can follow the same way to customize the milestone priority file.
 
 .. code-block:: python
 
-  process_excel_file(
+  run_steps_and_sort_excel_file(
       HERE / "source.xlsx", 
       HERE / "target.xlsx", 
       sprint_schedule_file=HERE / "milestone_priority.json"

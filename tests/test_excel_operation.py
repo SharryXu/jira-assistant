@@ -31,8 +31,8 @@ class TestExcelOperation:
     @pytest.mark.skipif(
         environ.get("JIRA_ACCESS_TOKEN") is None, reason="Security Consideration."
     )
-    def test_process_excel_file(self):
-        process_excel_file(
+    def test_run_steps_and_sort_excel_file(self):
+        run_steps_and_sort_excel_file(
             HERE / "files/happy_path.xlsx",
             HERE / "files/happy_path_sorted.xlsx",
             excel_definition_file=str(SRC_ASSETS / "excel_definition.json"),
