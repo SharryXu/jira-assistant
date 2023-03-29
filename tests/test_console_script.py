@@ -1,32 +1,29 @@
 import pathlib
 from os import remove, walk
-from subprocess import run
+from subprocess import CalledProcessError, run
 
 import pytest
-from mock_server import mock_jira_requests
-from requests_mock import Mocker
 
 HERE = pathlib.Path(__file__).resolve().parent
 
 
 class TestConsoleScript:
-    @pytest.mark.skipif(
-        not (HERE.parent.parent / "assets/.env").exists(),
-        reason="Only local machine can run.",
-    )
+    # Avoid call JIRA server.
     def test_process_excel_file(self):
-        with Mocker(
-            real_http=False, case_sensitive=False, adapter=mock_jira_requests()
-        ):
-            result = run(
-                ["process-excel-file", HERE / "files/happy_path.xlsx"],
-                capture_output=True,
-                check=True,
-            )
+        result = run(
+            [
+                "process-excel-file",
+                HERE / "files/happy_path.xlsx",
+                "--excel_definition_file",
+                HERE / "files/excel_definition_avoid_jira_operations.json",
+            ],
+            capture_output=True,
+            check=True,
+        )
 
-            assert "xlsx has been saved" in result.stdout.decode("utf-8")
+        assert "xlsx has been saved" in result.stdout.decode("utf-8")
 
-            remove(HERE / "files/happy_path_sorted.xlsx")
+        remove(HERE / "files/happy_path_sorted.xlsx")
 
     def test_generate_template_excel_definition(self):
         result = run(
@@ -42,10 +39,50 @@ class TestConsoleScript:
         assert "Generate success" in result.stdout.decode("utf-8")
         assert "excel" in result.stdout.decode("utf-8")
 
+    def test_generate_template_sprint_schedule(self):
+        result = run(
+            ["generate-template", "sprint-schedule"], capture_output=True, check=True
+        )
+
+        assert "Generate success" in result.stdout.decode("utf-8")
+        assert "schedule" in result.stdout.decode("utf-8")
+
+    def test_generate_template_failed(self):
+        with pytest.raises(CalledProcessError):
+            run(["generate-template", "abc"], capture_output=True, check=True)
+
+    def test_update_jira_info(self):
+        result = run(
+            [
+                "update-jira-info",
+                "--access_token",
+                "123456",
+                "--url",
+                "http://localhost",
+            ],
+            capture_output=True,
+            check=True,
+        )
+
+        assert "Add/Update jira url success" in result.stdout.decode("utf-8")
+        assert "Add/Update jira access token success" in result.stdout.decode("utf-8")
+
+    def test_update_jira_info_failed(self):
+        with pytest.raises(CalledProcessError):
+            result = run(
+                ["update-jira-info", "--access_token", " "],
+                capture_output=True,
+                check=True,
+            )
+
+            assert "Please check the access token" in result.stderr.decode("utf-8")
+
     def teardown_method(self):
         for _, _, files in walk(pathlib.Path.cwd().absolute(), topdown=False):
             for file in files:
                 if file.startswith("excel-definition") and "template" in file:
                     remove(file)
                 if file.startswith("excel-template"):
+                    remove(file)
+                if file.startswith("sprint-schedule"):
                     remove(file)

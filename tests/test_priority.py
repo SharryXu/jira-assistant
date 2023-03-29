@@ -19,7 +19,9 @@ class TestPriority:
         assert p4 > p5
         assert p5 < p4
         assert p5 > p6
+        assert p5 >= p6
         assert p6 < p5
+        assert p6 <= p5
 
     def test_priority_to_str(self):
         p1: Priority = Priority.CRITICAL

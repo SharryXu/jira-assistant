@@ -31,5 +31,6 @@ class TestMilestone:
         m4 = Milestone("R141")
         m4.calc_priority(store)
         assert m1 < m2
+        assert m1 <= m2
         assert m2 == m3
         assert m3 == m4
