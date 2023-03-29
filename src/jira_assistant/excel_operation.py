@@ -261,6 +261,8 @@ def _query_jira_information(stories: list[Story], excel_definition: ExcelDefinit
         )
         return
 
+    print(f"Jira info: {jira_url}")
+
     jira_fields = []
 
     for definition_column in excel_definition.get_columns():
