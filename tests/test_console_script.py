@@ -84,3 +84,5 @@ class TestConsoleScript:
                     remove(file)
                 if file.startswith("excel-template"):
                     remove(file)
+                if file.startswith("sprint-schedule"):
+                    remove(file)
