@@ -157,7 +157,9 @@ def process_excel_file() -> None:
 
         quit(0)
     except Exception as e:
-        print(e)
+        import traceback
+
+        traceback.print_exception(e)
         quit(1)
 
 

@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 # Avoid Company data
-*.xlsx
+confident.xlsx

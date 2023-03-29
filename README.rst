@@ -1,7 +1,7 @@
 Jira Assistant - userful jira tools
 =============================================
 
-|pypi| |python 3.11| |python 3.11 (Mac OS)| |CodeQL| |Documentation|
+|pypi| |python 3.11| |python 3.11 (Mac OS)| |CodeQL| |Documentation| |Codecov|
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/jira-assistant.svg?style=flat-square
     :target https://pypi.org/project/jira-assistant/
@@ -22,6 +22,10 @@ Jira Assistant - userful jira tools
 .. |Documentation| image:: https://readthedocs.org/projects/jira-assistant/badge/?version=latest
     :target: https://jira-assistant.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
+
+.. |Codecov| image:: https://codecov.io/gh/SharryXu/jira-assistant/branch/main/graph/badge.svg?token=BLI8NMS6S6 
+    :target: https://codecov.io/gh/SharryXu/jira-assistant
+    :alt: Codecov
 
 Installation
 ============
