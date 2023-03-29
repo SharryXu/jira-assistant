@@ -15,17 +15,19 @@ disable_warnings()
 
 
 class JiraClient:
-    def __init__(self, url, access_token: str) -> None:
+    def __init__(self, url: str, access_token: str) -> None:
         self.jira = JIRA(
-            server=url, token_auth=access_token, timeout=20, options={"verify": False}
+            server=url,
+            token_auth=access_token,
+            timeout=20,
+            options={"verify": False},
         )
 
     def health_check(self) -> bool:
         try:
             if self.jira.myself() is not None:
                 return True
-            else:
-                return False
+            return False
         except JIRAError:
             return False
 
