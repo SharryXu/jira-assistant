@@ -313,10 +313,10 @@ def update_jira_info():
                 )
 
                 if result is True:
-                    print("Add/Update access token success!")
+                    print("Add/Update jira access token success!")
                     quit(0)
                 else:
-                    print("Add/Update access token failed!")
+                    print("Add/Update jira access token failed!")
                     quit(1)
     except Exception as e:
         print(e)
