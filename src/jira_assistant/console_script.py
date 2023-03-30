@@ -71,11 +71,11 @@ def process_excel_file() -> None:
 
         if input_file_absolute_path.suffix.lower() != ".xlsx":
             print(f"Please provide an Excel file. File: {input_file_absolute_path}.")
-            quit(1)
+            exit(1)
 
         if not os.path.exists(input_file_absolute_path):
             print(f"Input file is not exist. File: {input_file_absolute_path}.")
-            quit(1)
+            exit(1)
 
         input_file_name_without_extension = input_file_absolute_path.stem
 
@@ -127,7 +127,7 @@ def process_excel_file() -> None:
                 print(
                     f"Please provide an JSON file for Excel definition. File: {excel_definition_file_absolute_path}."
                 )
-                quit(1)
+                exit(1)
 
         sprint_schedule_file_absolute_path = None
 
@@ -140,7 +140,7 @@ def process_excel_file() -> None:
                 print(
                     f"Please provide an JSON file for sprint schedule. File: {sprint_schedule_file_absolute_path}."
                 )
-                quit(1)
+                exit(1)
 
         # Over write parameter.
         over_write = True
@@ -155,12 +155,10 @@ def process_excel_file() -> None:
             over_write,
         )
 
-        quit(0)
+        exit(0)
     except Exception as e:
-        import traceback
-
-        traceback.print_exception(e)
-        quit(1)
+        print(e)
+        exit(1)
 
 
 def get_args_for_generate_template() -> Namespace:
@@ -214,13 +212,13 @@ def generate_template():
 
         if result is not None and result.is_file():
             print(f"Generate success! Template type: {template_type}.")
-            quit(0)
+            exit(0)
         else:
             print(f"Generate failed! Template type: {template_type}.")
-            quit(1)
+            exit(1)
     except Exception as e:
         print(e)
-        quit(1)
+        exit(1)
 
 
 def _generate_timestamp_filename(prefix: str, extension: str) -> "Path":
@@ -303,7 +301,7 @@ def update_jira_info():
 
             if len(access_token.strip()) == 0 or access_token.isspace():
                 print("Please check the access token.")
-                quit(1)
+                exit(1)
             else:
                 result, _, _ = set_key(
                     env_file,
@@ -314,10 +312,10 @@ def update_jira_info():
 
                 if result is True:
                     print("Add/Update jira access token success!")
-                    quit(0)
+                    exit(0)
                 else:
                     print("Add/Update jira access token failed!")
-                    quit(1)
+                    exit(1)
     except Exception as e:
         print(e)
-        quit(1)
+        exit(1)

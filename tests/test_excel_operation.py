@@ -81,3 +81,14 @@ class TestExcelOperation:
                     assert stories[i] >= stories[i + 1]
 
             remove(HERE / "files/happy_path_sorted.xlsx")
+
+    def test_run_steps_and_sort_excel_file_with_empty_file(self):
+        with Mocker(
+            real_http=False, case_sensitive=False, adapter=mock_jira_requests()
+        ):
+            run_steps_and_sort_excel_file(
+                HERE / "files/empty_excel.xlsx",
+                HERE / "files/empty_excel_sorted.xlsx",
+                excel_definition_file=str(SRC_ASSETS / "excel_definition.json"),
+                sprint_schedule_file=str(SRC_ASSETS / "sprint_schedule.json"),
+            )
