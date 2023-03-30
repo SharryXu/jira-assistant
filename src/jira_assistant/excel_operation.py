@@ -369,7 +369,7 @@ def run_steps_and_sort_excel_file(
         input_file, excel_definition, sprint_schedule
     )
 
-    if stories is None:
+    if stories is None or len(stories) == 0:
         print("There are no stories inside the excel file.")
         return
 

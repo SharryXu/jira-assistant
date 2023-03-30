@@ -1,3 +1,5 @@
+import pathlib
+from json import load
 from re import IGNORECASE, search
 
 from requests import Response
@@ -5,16 +7,12 @@ from requests_mock import Adapter
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import create_response
 
-mock_jira_stories = {
-    "a-1": {"status": "CLOSED", "domain": "A"},
-    "a-2": {"status": "PENDING", "domain": "A"},
-    "a-3": {"status": "PENDING", "domain": "A"},
-    "a-4": {"status": "PENDING", "domain": "A"},
-    "b-1": {"status": "PENDING", "domain": "B"},
-    "b-2": {"status": "PENDING", "domain": "B"},
-    "c-1": {"status": "PENDING", "domain": "C"},
-    "c-2": {"status": "PENDING", "domain": "C"},
-}
+HERE = pathlib.Path(__file__).resolve().parent
+TEST_ASSETS = HERE / "files"
+
+mock_jira_stories: dict[str, dict[str, str]] = {}
+with open(TEST_ASSETS / "mock_jira_stories.json", encoding="utf-8") as file:
+    mock_jira_stories = load(file)
 
 
 def custom_matcher(request: _RequestObjectProxy) -> Response | None:
@@ -113,9 +111,12 @@ def mock_search_response(request: _RequestObjectProxy) -> Response:
     }
 
     for story_id in story_ids:
+        new_story_id = mock_jira_stories[story_id].get("originalStoryId", None)
+        if new_story_id is None:
+            new_story_id = story_id
         response_json["issues"].append(
             {
-                "key": story_id,
+                "key": new_story_id,
                 "fields": {
                     "customfield_15601": {
                         "value": mock_jira_stories[story_id]["domain"]
