@@ -1,11 +1,15 @@
 Jira Assistant - userful jira tools
 =============================================
 
-|pypi| |python 3.11| |python 3.11 (Mac OS)| |CodeQL| |Documentation| |Codecov|
+|pypi| |Download| |python 3.11| |python 3.11 (Mac OS)| |CodeQL| |Documentation| |Codecov| |CodeClimate|
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/jira-assistant.svg?style=flat-square
     :target https://pypi.org/project/jira-assistant/
     :alt: pypi version
+
+.. |Download| image:: https://static.pepy.tech/personalized-badge/jira-assistant?period=month&units=international_system&left_color=black&right_color=blue&left_text=downloads/month
+    :target: https://pepy.tech/project/jira-assistant
+    :alt: download
 
 .. |python 3.11| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-test.yml/badge.svg
     :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-test.yml
@@ -26,6 +30,10 @@ Jira Assistant - userful jira tools
 .. |Codecov| image:: https://codecov.io/gh/SharryXu/jira-assistant/branch/main/graph/badge.svg?token=BLI8NMS6S6 
     :target: https://codecov.io/gh/SharryXu/jira-assistant
     :alt: Codecov
+
+.. |CodeClimate| image:: https://api.codeclimate.com/v1/badges/aeae36dcbb250784672b/maintainability
+   :target: https://codeclimate.com/github/SharryXu/jira-assistant/maintainability
+   :alt: Maintainability
 
 Installation
 ============
