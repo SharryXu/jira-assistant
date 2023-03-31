@@ -1,8 +1,8 @@
 import pathlib
 
-import pytest
+from pytest import raises
 
-from jira_assistant.excel_definition import *
+from jira_assistant.excel_definition import ExcelDefinition
 
 HERE = pathlib.Path(__file__).resolve().parent
 SRC_ASSETS = HERE.parent / "src/jira_assistant/assets"
@@ -14,14 +14,14 @@ class TestExcelDefinition:
         excel_definition_filename = SRC_ASSETS / "excel_definition.json"
 
         store = ExcelDefinition()
-        with open(excel_definition_filename) as file:
+        with open(excel_definition_filename, encoding="utf-8") as file:
             store.load(file.read())
         assert store.total_count() > 0
 
     def test_load_using_none_input(self):
         store = ExcelDefinition()
         content: str = None  # type: ignore
-        with pytest.raises(ValueError) as err:
+        with raises(ValueError) as err:
             store.load(content)
         assert "There is no content in the excel definition file." in str(err.value)
 
@@ -34,7 +34,7 @@ class TestExcelDefinition:
     def test_load_file_none(self):
         store = ExcelDefinition()
         file: str = None  # type: ignore
-        with pytest.raises(ValueError) as err:
+        with raises(ValueError) as err:
             store.load_file(file)
         assert "invalid" in str(err.value)
 
@@ -92,7 +92,7 @@ class TestExcelDefinition:
     def test_validate_invalid_name(self):
         excel_definition_filename = TEST_ASSETS / "excel_definition_invalid_name.json"
         store = ExcelDefinition()
-        with pytest.raises(TypeError) as err:
+        with raises(TypeError):
             store.load_file(excel_definition_filename)
 
     def test_validate_invalid_raise_ranking(self):
@@ -129,7 +129,7 @@ class TestExcelDefinition:
     def test_validate_invalid_index(self):
         excel_definition_filename = TEST_ASSETS / "excel_definition_invalid_index.json"
         store = ExcelDefinition()
-        with pytest.raises(TypeError) as err:
+        with raises(TypeError):
             store.load_file(excel_definition_filename)
 
     def test_validate_index_not_continuation(self):
