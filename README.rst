@@ -1,7 +1,7 @@
 Jira Assistant - userful jira tools
 =============================================
 
-|pypi| |Download| |python 3.11| |python 3.11 (Mac OS)| |CodeQL| |Documentation| |Codecov| |CodeClimate|
+|pypi| |Download| |Linux| |Windows| |Mac OS| |CodeQL| |Documentation| |Codecov| |CodeClimate|
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/jira-assistant.svg?style=flat-square
     :target https://pypi.org/project/jira-assistant/
@@ -11,13 +11,17 @@ Jira Assistant - userful jira tools
     :target: https://pepy.tech/project/jira-assistant
     :alt: download
 
-.. |python 3.11| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-test.yml/badge.svg
-    :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-test.yml
-    :alt: python 3.11
+.. |Linux| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-linux-test.yml/badge.svg
+    :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-linux-test.yml
+    :alt: python 3.11 (Linux)
 
-.. |python 3.11 (Mac OS)| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-macos-test.yml/badge.svg
+.. |Mac OS| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-macos-test.yml/badge.svg
     :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-macos-test.yml
     :alt: python 3.11 (Mac OS)
+
+.. |Windows| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-windows-test.yml/badge.svg
+    :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-windows-test.yml
+    :alt: python 3.11 (Windows)
 
 .. |CodeQL| image:: https://github.com/sharryxu/jira-assistant/workflows/CodeQL/badge.svg
     :target: https://github.com/SharryXu/jira-assistant/actions/workflows/CodeQL.yml
