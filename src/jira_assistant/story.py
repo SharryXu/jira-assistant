@@ -26,10 +26,9 @@ def convert_to_bool(raw: Any) -> bool:
     if isinstance(raw, bool):
         return raw
     value = str(raw).strip().upper()
-    if value == "YES" or value == "TRUE":
+    if value in ("YES", "TRUE"):
         return True
-    else:
-        return False
+    return False
 
 
 def convert_to_decimal(raw: Any) -> Decimal:
@@ -40,8 +39,7 @@ def convert_to_decimal(raw: Any) -> Decimal:
     result = pattern.search(raw)
     if result is not None:
         return Decimal(result.group())
-    else:
-        return Decimal(0)
+    return Decimal(0)
 
 
 def convert_to_datetime(raw: Any) -> Optional[datetime]:
@@ -330,9 +328,8 @@ def _internal_sort_stories_by_property_and_order_considering_parent_range(
                     break
             if all_parent_column_matched:
                 continue
-            else:
-                end_index = i
-                break
+            end_index = i
+            break
         # Same parent level process
         for column_name, sort_order in reversed(sort_rules):
             if begin_index != end_index:
@@ -436,9 +433,8 @@ def _internal_raise_story_ranking_by_property_considering_parent_level(
                     break
             if all_parent_column_matched:
                 continue
-            else:
-                end_index = i
-                break
+            end_index = i
+            break
 
         # Same parent level process
         for column_name, _ in reversed(sort_rules):

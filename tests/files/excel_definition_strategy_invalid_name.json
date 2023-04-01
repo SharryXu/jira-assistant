@@ -45,7 +45,7 @@
                 "ScopeRaiseRanking": 0
             },
             {
-                "Index": 23,
+                "Index": 3,
                 "Name": "storyId",
                 "Type": "str",
                 "RequireSort": false,

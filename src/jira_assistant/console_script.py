@@ -131,7 +131,7 @@ def process_excel_file() -> None:
                 print(
                     f"Please provide an JSON file for Excel definition. File: {excel_definition_file_absolute_path}."
                 )
-                exit(1)
+                sys.exit(1)
 
         sprint_schedule_file_absolute_path = None
 

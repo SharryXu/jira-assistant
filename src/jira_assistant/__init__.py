@@ -16,12 +16,7 @@ from .excel_operation import (
 from .milestone import Milestone
 from .priority import Priority
 from .sprint_schedule import SprintScheduleStore
-from .story import (
-    Story,
-    StoryFactory,
-    sort_stories_by_property_and_order,
-    sort_stories_by_raise_ranking,
-)
+from .story import Story, StoryFactory
 
 __version__ = version("jira_assistant")
 
@@ -37,8 +32,6 @@ __all__ = [
     "SprintScheduleStore",
     "Story",
     "StoryFactory",
-    "sort_stories_by_property_and_order",
-    "sort_stories_by_raise_ranking",
     "process_excel_file",
     "generate_template",
     "update_jira_info",

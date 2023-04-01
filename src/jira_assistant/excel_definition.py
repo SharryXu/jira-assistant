@@ -38,7 +38,7 @@ def parse_json_item_to_pre_process_step(json_item: Any) -> PreProcessStep:
         if key.lower() == "name".lower():
             if value is None:
                 raise ValueError("The pre-process step must have a name.")
-            elif isinstance(value, str):
+            if isinstance(value, str):
                 pre_process_step_name = value
             else:
                 raise TypeError(
@@ -279,8 +279,7 @@ class ExcelDefinition:
             if begin < end:
                 return set(i for i in range(begin, end + 1))
             return set(i for i in range(end, begin + 1))
-        else:
-            return set(int(i) for i in expression.split(","))
+        return set(int(i) for i in expression.split(","))
 
     def load_file(self, file: Union[str, Path]) -> "ExcelDefinition":
         """
@@ -305,6 +304,13 @@ class ExcelDefinition:
         return self
 
     def validate(self) -> "list":
+        return (
+            self._validate_pre_process_steps()
+            + self._validate_sort_strategies()
+            + self._validate_column_definitions()
+        )
+
+    def _validate_pre_process_steps(self) -> "list[str]":
         invalid_definitions = []
 
         # Validate PreProcessSteps
@@ -330,6 +336,11 @@ class ExcelDefinition:
                 invalid_definitions.append(
                     f"The format of the Jira Statuses is invalid. PreProcessStep: {pre_process_step['name']}. Supported format like: ['CLOSED', 'PENDING RELEASE']."
                 )
+
+        return invalid_definitions
+
+    def _validate_sort_strategies(self) -> "list[str]":
+        invalid_definitions = []
 
         # Validate Strategies
         strategy_priorities: list[int] = []
@@ -371,6 +382,11 @@ class ExcelDefinition:
             invalid_definitions.append(
                 "The priority of strategies cannot be duplicate."
             )
+
+        return invalid_definitions
+
+    def _validate_column_definitions(self) -> "list[str]":
+        invalid_definitions = []
 
         # Validate the Columns
         exist_story_id = False
@@ -529,19 +545,18 @@ class ExcelDefinition:
         type_str = str(type_str).strip().lower()
         if type_str.lower() == "str":
             return str
-        elif type_str.lower() == "bool":
+        if type_str.lower() == "bool":
             return bool
-        elif type_str.lower() == "datetime":
+        if type_str.lower() == "datetime":
             return datetime
-        elif type_str.lower() == "priority":
+        if type_str.lower() == "priority":
             return Priority
-        elif type_str.lower() == "milestone":
+        if type_str.lower() == "milestone":
             return Milestone
         # Currently, only support float/double
-        elif type_str.lower() == "number":
+        if type_str.lower() == "number":
             return float
-        else:
-            return None
+        return None
 
     def __iter__(self):
         for item in self.columns:

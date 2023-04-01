@@ -18,7 +18,6 @@
 # -- Project information -----------------------------------------------------
 
 project = "jira-assistant"
-copyright = "2022, Sharry Xu"
 author = "Sharry Xu"
 
 

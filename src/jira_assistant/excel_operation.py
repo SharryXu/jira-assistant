@@ -130,10 +130,9 @@ def read_excel_file(
 def _should_skip(row: tuple) -> bool:
     if len(row) == 0:
         return True
-    else:
-        first_cell_value = row[0].value
-        if first_cell_value is None or len(str(first_cell_value)) == 0:
-            return True
+    first_cell_value = row[0].value
+    if first_cell_value is None or len(str(first_cell_value)) == 0:
+        return True
     return False
 
 
