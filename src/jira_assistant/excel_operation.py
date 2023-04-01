@@ -403,7 +403,11 @@ def run_steps_and_sort_excel_file(
                 for story in stories:
                     if story.need_sort:
                         stories_need_call_jira.append(story)
-                _query_jira_information(stories_need_call_jira, excel_definition)
+                if not _query_jira_information(
+                    stories_need_call_jira, excel_definition
+                ):
+                    print("Retrieve jira information failed.")
+                    return
         elif pre_process_step["name"].lower() in "FilterOutStoryWithoutId".lower():
             for story in stories:
                 if story["storyId"] is None:

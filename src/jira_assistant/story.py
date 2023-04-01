@@ -165,7 +165,6 @@ class StoryFactory:
         for column in self._columns:
             if column["inline_weights"] > 0:
                 compare_rules.append((column["name"], column["inline_weights"]))
-        # TODO: Avoid hard code location.
         compare_rules.sort(key=lambda r: r[1], reverse=True)
         return compare_rules
 
@@ -180,8 +179,7 @@ class StoryFactory:
     def create_story(self) -> Story:
         return Story(self)
 
-    # TODO: Need to include all sort strategies.
-    def compare_story(self, a: Optional[Story], b: Optional[Story]) -> int:
+    def compare_story(self, story_a: Optional[Story], story_b: Optional[Story]) -> int:
         """
         Compare two stories.
 
@@ -196,10 +194,14 @@ class StoryFactory:
             0: means a == b
             -1: means a < b
         """
-        if a is None or b is None:
+        if story_a is None or story_b is None:
             raise ValueError("The compare stories cannot be None.")
 
-        if a.factory != b.factory or a.factory != self or b.factory != self:
+        if (
+            story_a.factory != story_b.factory
+            or story_a.factory != self
+            or story_b.factory != self
+        ):
             raise ValueError("The compare stories were built by different factory.")
 
         rules_count = len(self.compare_rules)
@@ -220,20 +222,20 @@ class StoryFactory:
 
                 if highest_property_of_a is None:
                     # property_value, property_location
-                    highest_property_of_a = (a[compare_rule[0]], i)
+                    highest_property_of_a = (story_a[compare_rule[0]], i)
 
-                if a[compare_rule[0]] > highest_property_of_a[0]:
-                    highest_property_of_a = (a[compare_rule[0]], i)
+                if story_a[compare_rule[0]] > highest_property_of_a[0]:
+                    highest_property_of_a = (story_a[compare_rule[0]], i)
 
             for i, compare_rule in enumerate(self.compare_rules):
                 if i in skip_index_of_b:
                     continue
 
                 if highest_property_of_b is None:
-                    highest_property_of_b = (b[compare_rule[0]], i)
+                    highest_property_of_b = (story_b[compare_rule[0]], i)
 
-                if b[compare_rule[0]] > highest_property_of_b[0]:
-                    highest_property_of_b = (b[compare_rule[0]], i)
+                if story_b[compare_rule[0]] > highest_property_of_b[0]:
+                    highest_property_of_b = (story_b[compare_rule[0]], i)
 
             if highest_property_of_a is None:
                 highest_property_of_a = (Priority.NA, count)
