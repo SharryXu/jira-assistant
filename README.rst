@@ -23,7 +23,7 @@ Jira Assistant - userful jira tools
     :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-windows-test.yml
     :alt: python 3.11 (Windows)
 
-.. |Pylint| image:: https://github.com/sharryxu/jira-assistant/workflows/pylint/badge.svg
+.. |Pylint| image:: https://github.com/sharryxu/jira-assistant/workflows/pylint.yml/badge.svg
     :target: https://github.com/SharryXu/jira-assistant/actions/workflows/pylint.yml
     :alt: Pylint 
 
