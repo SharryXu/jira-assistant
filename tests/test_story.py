@@ -1,10 +1,10 @@
 from jira_assistant.excel_definition import ExcelDefinitionColumn
 from jira_assistant.priority import Priority
-from jira_assistant.story import *
+from jira_assistant.story import StoryFactory
 
 
 def mock_data() -> list:
-    storyFactory = StoryFactory(
+    story_factory = StoryFactory(
         [
             ExcelDefinitionColumn(
                 index=1,
@@ -88,104 +88,104 @@ def mock_data() -> list:
     )
 
     # NA, Middle, Middle, NA
-    s1 = storyFactory.create_story()
-    s1["name"] = "s1"
-    s1["regulatory"] = Priority.NA
-    s1["partnerPriority"] = Priority.MIDDLE
-    s1["productValue"] = Priority.MIDDLE
-    s1["marketingUrgency"] = Priority.NA
+    s_1 = story_factory.create_story()
+    s_1["name"] = "s1"
+    s_1["regulatory"] = Priority.NA
+    s_1["partnerPriority"] = Priority.MIDDLE
+    s_1["productValue"] = Priority.MIDDLE
+    s_1["marketingUrgency"] = Priority.NA
     # NA, Low, High, NA
-    s2 = storyFactory.create_story()
-    s2["name"] = "s2"
-    s2["regulatory"] = Priority.NA
-    s2["partnerPriority"] = Priority.LOW
-    s2["productValue"] = Priority.HIGH
-    s2["marketingUrgency"] = Priority.NA
+    s_2 = story_factory.create_story()
+    s_2["name"] = "s2"
+    s_2["regulatory"] = Priority.NA
+    s_2["partnerPriority"] = Priority.LOW
+    s_2["productValue"] = Priority.HIGH
+    s_2["marketingUrgency"] = Priority.NA
     # NA, Middle, High, NA
-    s3 = storyFactory.create_story()
-    s3["name"] = "s3"
-    s3["regulatory"] = Priority.NA
-    s3["partnerPriority"] = Priority.MIDDLE
-    s3["productValue"] = Priority.HIGH
-    s3["marketingUrgency"] = Priority.NA
+    s_3 = story_factory.create_story()
+    s_3["name"] = "s3"
+    s_3["regulatory"] = Priority.NA
+    s_3["partnerPriority"] = Priority.MIDDLE
+    s_3["productValue"] = Priority.HIGH
+    s_3["marketingUrgency"] = Priority.NA
     # NA, High, High, NA
-    s4 = storyFactory.create_story()
-    s4["name"] = "s4"
-    s4["regulatory"] = Priority.NA
-    s4["partnerPriority"] = Priority.HIGH
-    s4["productValue"] = Priority.HIGH
-    s4["marketingUrgency"] = Priority.NA
+    s_4 = story_factory.create_story()
+    s_4["name"] = "s4"
+    s_4["regulatory"] = Priority.NA
+    s_4["partnerPriority"] = Priority.HIGH
+    s_4["productValue"] = Priority.HIGH
+    s_4["marketingUrgency"] = Priority.NA
     # High, NA, High, NA
-    s5 = storyFactory.create_story()
-    s5["name"] = "s5"
-    s5["regulatory"] = Priority.HIGH
-    s5["partnerPriority"] = Priority.NA
-    s5["productValue"] = Priority.HIGH
-    s5["marketingUrgency"] = Priority.NA
+    s_5 = story_factory.create_story()
+    s_5["name"] = "s5"
+    s_5["regulatory"] = Priority.HIGH
+    s_5["partnerPriority"] = Priority.NA
+    s_5["productValue"] = Priority.HIGH
+    s_5["marketingUrgency"] = Priority.NA
 
     # Critical, N/A, Middle, N/A
-    s6 = storyFactory.create_story()
-    s6["name"] = "s6"
-    s6["regulatory"] = Priority.CRITICAL
-    s6["partnerPriority"] = Priority.NA
-    s6["productValue"] = Priority.MIDDLE
-    s6["marketingUrgency"] = Priority.NA
+    s_6 = story_factory.create_story()
+    s_6["name"] = "s6"
+    s_6["regulatory"] = Priority.CRITICAL
+    s_6["partnerPriority"] = Priority.NA
+    s_6["productValue"] = Priority.MIDDLE
+    s_6["marketingUrgency"] = Priority.NA
 
     # Critical, N/A, High, Low
-    s7 = storyFactory.create_story()
-    s7["name"] = "s7"
-    s7["regulatory"] = Priority.CRITICAL
-    s7["partnerPriority"] = Priority.NA
-    s7["productValue"] = Priority.HIGH
-    s7["marketingUrgency"] = Priority.LOW
+    s_7 = story_factory.create_story()
+    s_7["name"] = "s7"
+    s_7["regulatory"] = Priority.CRITICAL
+    s_7["partnerPriority"] = Priority.NA
+    s_7["productValue"] = Priority.HIGH
+    s_7["marketingUrgency"] = Priority.LOW
 
     # Critical, Low, Middle, N/A
-    s8 = storyFactory.create_story()
-    s8["name"] = "s8"
-    s8["regulatory"] = Priority.CRITICAL
-    s8["partnerPriority"] = Priority.LOW
-    s8["productValue"] = Priority.MIDDLE
-    s8["marketingUrgency"] = Priority.NA
+    s_8 = story_factory.create_story()
+    s_8["name"] = "s8"
+    s_8["regulatory"] = Priority.CRITICAL
+    s_8["partnerPriority"] = Priority.LOW
+    s_8["productValue"] = Priority.MIDDLE
+    s_8["marketingUrgency"] = Priority.NA
 
     # Critical, Middle, High, Middle
-    s9 = storyFactory.create_story()
-    s9["name"] = "s9"
-    s9["regulatory"] = Priority.CRITICAL
-    s9["partnerPriority"] = Priority.MIDDLE
-    s9["productValue"] = Priority.HIGH
-    s9["marketingUrgency"] = Priority.MIDDLE
+    s_9 = story_factory.create_story()
+    s_9["name"] = "s9"
+    s_9["regulatory"] = Priority.CRITICAL
+    s_9["partnerPriority"] = Priority.MIDDLE
+    s_9["productValue"] = Priority.HIGH
+    s_9["marketingUrgency"] = Priority.MIDDLE
 
-    return [s1, s2, s3, s4, s5, s6, s7, s8, s9]
+    return [s_1, s_2, s_3, s_4, s_5, s_6, s_7, s_8, s_9]
 
 
 class TestStory:
     def test_compare_story(self):
         data = mock_data()
-        s1 = data[0]
-        s2 = data[1]
-        s3 = data[2]
-        s4 = data[3]
-        s5 = data[4]
-        s6 = data[5]
-        s7 = data[6]
-        s8 = data[7]
-        s9 = data[8]
-        assert s1 < s2
-        assert s1 < s3
-        assert s2 < s3
-        assert s3 < s5
-        assert s2 < s5
-        assert s4 < s5
-        assert s1 < s5
-        assert s6 < s7
-        assert s8 < s9
+        s_1 = data[0]
+        s_2 = data[1]
+        s_3 = data[2]
+        s_4 = data[3]
+        s_5 = data[4]
+        s_6 = data[5]
+        s_7 = data[6]
+        s_8 = data[7]
+        s_9 = data[8]
+        assert s_1 < s_2
+        assert s_1 < s_3
+        assert s_2 < s_3
+        assert s_3 < s_5
+        assert s_2 < s_5
+        assert s_4 < s_5
+        assert s_1 < s_5
+        assert s_6 < s_7
+        assert s_8 < s_9
 
     def test_compare_story_property(self):
         data = mock_data()
-        s8 = data[7]
-        s9 = data[8]
-        assert s8["name"] < s9["name"]
-        assert s8["productValue"] < s9["productValue"]
+        s_8 = data[7]
+        s_9 = data[8]
+        assert s_8["name"] < s_9["name"]
+        assert s_8["productValue"] < s_9["productValue"]
 
     def test_sort_stories_by_property_and_order(self):
         data = mock_data()

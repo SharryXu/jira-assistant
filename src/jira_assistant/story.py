@@ -7,8 +7,8 @@ from typing import Any, Optional
 from dateutil import parser
 
 from .excel_definition import ExcelDefinition, ExcelDefinitionColumn
-from .milestone import *
-from .priority import *
+from .milestone import Milestone
+from .priority import Priority, convert_to_priority
 from .sprint_schedule import SprintScheduleStore
 
 __all__ = [
@@ -23,37 +23,35 @@ __all__ = [
 
 
 def convert_to_bool(raw: Any) -> bool:
-    if type(raw) is bool:
+    if isinstance(raw, bool):
         return raw
     value = str(raw).strip().upper()
-    if value == "YES" or value == "TRUE":
+    if value in ("YES", "TRUE"):
         return True
-    else:
-        return False
+    return False
 
 
 def convert_to_decimal(raw: Any) -> Decimal:
-    if type(raw) is Decimal:
+    if isinstance(raw, Decimal):
         return raw
     raw = str(raw).strip()
     pattern = re.compile("[0-9.]{1,10}")
     result = pattern.search(raw)
     if result is not None:
         return Decimal(result.group())
-    else:
-        return Decimal(0)
+    return Decimal(0)
 
 
-def convert_to_datetime(raw: Any) -> "datetime | None":
-    if type(raw) is datetime:
+def convert_to_datetime(raw: Any) -> Optional[datetime]:
+    if isinstance(raw, datetime):
         return raw
     if raw is None:
-        return
+        return None
     raw = str(raw).strip()
     return parser.parse(raw)
 
 
-class Story(object):
+class Story:
     def __init__(self, factory: "StoryFactory") -> None:
         self.need_sort = True
         if factory is None:
@@ -87,21 +85,19 @@ class Story(object):
         return getattr(self, property_name)
 
     def format_value(self, property_name: str) -> str:
-        property = getattr(self, property_name, None)
-        if property is None:
+        property_value = getattr(self, property_name, None)
+        if property_value is None:
             return ""
-        elif type(property) is datetime:
-            return property.date().isoformat()
-        elif type(property) is bool:
-            if property:
+        if isinstance(property_value, datetime):
+            return property_value.date().isoformat()
+        if isinstance(property_value, bool):
+            if property_value:
                 return "Yes"
-            else:
-                return "No"
+            return "No"
         # TODO: Support customized format string in JSON.
-        elif type(property) is float:
-            return str(property)
-        else:
-            return str(property)
+        if isinstance(property_value, float):
+            return str(property_value)
+        return str(property_value)
 
     def set_value(self, property_type: Any, property_name: str, property_value: Any):
         if property_type is str:
@@ -155,7 +151,7 @@ class Story(object):
         return result
 
 
-class StoryFactory(object):
+class StoryFactory:
     def __init__(self, columns: "list[ExcelDefinitionColumn]") -> None:
         if columns is None:
             raise ValueError("Columns must be provided!")
@@ -167,7 +163,6 @@ class StoryFactory(object):
         for column in self._columns:
             if column["inline_weights"] > 0:
                 compare_rules.append((column["name"], column["inline_weights"]))
-        # TODO: Avoid hard code location.
         compare_rules.sort(key=lambda r: r[1], reverse=True)
         return compare_rules
 
@@ -182,8 +177,7 @@ class StoryFactory(object):
     def create_story(self) -> Story:
         return Story(self)
 
-    # TODO: Need to include all sort strategies.
-    def compare_story(self, a: "Story | None", b: "Story | None") -> int:
+    def compare_story(self, story_a: Optional[Story], story_b: Optional[Story]) -> int:
         """
         Compare two stories.
 
@@ -198,10 +192,14 @@ class StoryFactory(object):
             0: means a == b
             -1: means a < b
         """
-        if a is None or b is None:
+        if story_a is None or story_b is None:
             raise ValueError("The compare stories cannot be None.")
 
-        if a.factory != b.factory or a.factory != self or b.factory != self:
+        if (
+            story_a.factory != story_b.factory
+            or story_a.factory != self
+            or story_b.factory != self
+        ):
             raise ValueError("The compare stories were built by different factory.")
 
         rules_count = len(self.compare_rules)
@@ -216,26 +214,26 @@ class StoryFactory(object):
             # property_value, property_location
             highest_property_of_a = None
             highest_property_of_b = None
-            for i in range(len(self.compare_rules)):
+            for i, compare_rule in enumerate(self.compare_rules):
                 if i in skip_index_of_a:
                     continue
 
                 if highest_property_of_a is None:
                     # property_value, property_location
-                    highest_property_of_a = (a[self.compare_rules[i][0]], i)
+                    highest_property_of_a = (story_a[compare_rule[0]], i)
 
-                if a[self.compare_rules[i][0]] > highest_property_of_a[0]:
-                    highest_property_of_a = (a[self.compare_rules[i][0]], i)
+                if story_a[compare_rule[0]] > highest_property_of_a[0]:
+                    highest_property_of_a = (story_a[compare_rule[0]], i)
 
-            for i in range(len(self.compare_rules)):
+            for i, compare_rule in enumerate(self.compare_rules):
                 if i in skip_index_of_b:
                     continue
 
                 if highest_property_of_b is None:
-                    highest_property_of_b = (b[self.compare_rules[i][0]], i)
+                    highest_property_of_b = (story_b[compare_rule[0]], i)
 
-                if b[self.compare_rules[i][0]] > highest_property_of_b[0]:
-                    highest_property_of_b = (b[self.compare_rules[i][0]], i)
+                if story_b[compare_rule[0]] > highest_property_of_b[0]:
+                    highest_property_of_b = (story_b[compare_rule[0]], i)
 
             if highest_property_of_a is None:
                 highest_property_of_a = (Priority.NA, count)
@@ -250,10 +248,10 @@ class StoryFactory(object):
             # priority value
             if highest_property_of_a[0] > highest_property_of_b[0]:
                 return 1
-            elif highest_property_of_a[0] == highest_property_of_b[0]:
+            if highest_property_of_a[0] == highest_property_of_b[0]:
                 if highest_property_of_a[1] < highest_property_of_b[1]:
                     return 1
-                elif highest_property_of_a[1] > highest_property_of_b[1]:
+                if highest_property_of_a[1] > highest_property_of_b[1]:
                     return -1
             else:
                 return -1
@@ -261,10 +259,10 @@ class StoryFactory(object):
             # property location
             if highest_property_of_a[1] > highest_property_of_b[1]:
                 return 1
-            elif highest_property_of_a[1] == highest_property_of_b[1]:
+            if highest_property_of_a[1] == highest_property_of_b[1]:
                 if highest_property_of_a[0] > highest_property_of_b[0]:
                     return 1
-                elif highest_property_of_a[0] < highest_property_of_b[0]:
+                if highest_property_of_a[0] < highest_property_of_b[0]:
                     return -1
             else:
                 return -1
@@ -330,9 +328,8 @@ def _internal_sort_stories_by_property_and_order_considering_parent_range(
                     break
             if all_parent_column_matched:
                 continue
-            else:
-                end_index = i
-                break
+            end_index = i
+            break
         # Same parent level process
         for column_name, sort_order in reversed(sort_rules):
             if begin_index != end_index:
@@ -436,9 +433,8 @@ def _internal_raise_story_ranking_by_property_considering_parent_level(
                     break
             if all_parent_column_matched:
                 continue
-            else:
-                end_index = i
-                break
+            end_index = i
+            break
 
         # Same parent level process
         for column_name, _ in reversed(sort_rules):
@@ -456,16 +452,16 @@ def _internal_raise_story_ranking_by_property_considering_parent_level(
 def _raise_story_ranking_by_property(
     stories: "list[Story]", property_name: str
 ) -> "list[Story]":
-    if type(getattr(stories[0], property_name)) is not bool:
+    if not isinstance(getattr(stories[0], property_name), bool):
         return stories
     result: list[Story] = [stories[0]] * len(stories)
     j = 0
-    for i in range(len(stories)):
-        if getattr(stories[i], property_name) is True:
-            result[j] = stories[i]
+    for story in stories:
+        if getattr(story, property_name) is True:
+            result[j] = story
             j += 1
-    for i in range(len(stories)):
-        if getattr(stories[i], property_name) is False:
-            result[j] = stories[i]
+    for story in stories:
+        if getattr(story, property_name) is False:
+            result[j] = story
             j += 1
     return result

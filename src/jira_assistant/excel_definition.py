@@ -4,19 +4,19 @@ This module is used to store excel column definition information.
 """
 import json
 import pathlib
+import re
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
-from re import compile
 from types import NoneType
-from typing import Any, TypedDict
+from typing import Any, Optional, TypedDict, Union
 
 from .milestone import Milestone
 from .priority import Priority
 
 __all__ = ["ExcelDefinition"]
 
-RaiseRankingLevelScopeIndexValidationRule = compile(
+RaiseRankingLevelScopeIndexValidationRule = re.compile(
     r"(^(\d{1,},){0,}\d{1,}$)|^\d{1,}-\d{1,}$"
 )
 
@@ -38,7 +38,7 @@ def parse_json_item_to_pre_process_step(json_item: Any) -> PreProcessStep:
         if key.lower() == "name".lower():
             if value is None:
                 raise ValueError("The pre-process step must have a name.")
-            elif type(value) is str:
+            if isinstance(value, str):
                 pre_process_step_name = value
             else:
                 raise TypeError(
@@ -47,7 +47,7 @@ def parse_json_item_to_pre_process_step(json_item: Any) -> PreProcessStep:
         if key.lower() == "enabled".lower():
             if value is None:
                 pre_process_step_enabled = False
-            elif type(value) is bool:
+            elif isinstance(value, bool):
                 pre_process_step_enabled = value
             else:
                 raise TypeError(
@@ -55,7 +55,7 @@ def parse_json_item_to_pre_process_step(json_item: Any) -> PreProcessStep:
                 )
         if key.lower() == "config".lower():
             pre_process_step_config = {}
-            if value is not None and type(value) is dict:
+            if value is not None and isinstance(value, dict):
                 for name in value:
                     # More config support.
                     if name.lower() == "JiraStatuses".lower():
@@ -85,7 +85,7 @@ def parse_json_item_to_sort_strategy(json_item: Any) -> SortStrategy:
         if key.lower() == "name".lower():
             if value is None:
                 raise ValueError("The sort strategy must have a name.")
-            elif type(value) is str:
+            if isinstance(value, str):
                 strategy_name = value
             else:
                 raise TypeError(
@@ -94,7 +94,7 @@ def parse_json_item_to_sort_strategy(json_item: Any) -> SortStrategy:
         if key.lower() == "priority".lower():
             if value is None:
                 strategy_priority = 0
-            elif type(value) is int:
+            elif isinstance(value, int):
                 strategy_priority = value
             else:
                 raise TypeError(
@@ -103,7 +103,7 @@ def parse_json_item_to_sort_strategy(json_item: Any) -> SortStrategy:
         if key.lower() == "enabled".lower():
             if value is None:
                 strategy_enabled = False
-            elif type(value) is bool:
+            elif isinstance(value, bool):
                 strategy_enabled = value
             else:
                 raise TypeError(
@@ -111,7 +111,7 @@ def parse_json_item_to_sort_strategy(json_item: Any) -> SortStrategy:
                 )
         if key.lower() == "config".lower():
             strategy_config = {}
-            if value is not None and type(value) is dict:
+            if value is not None and isinstance(value, dict):
                 for name in value:
                     # More config support.
                     if name.lower() == "ParentScopeIndexRange".lower():
@@ -160,7 +160,7 @@ def parse_json_item_to_excel_definition_column(json_item: Any) -> ExcelDefinitio
         if key.lower() == "index".lower():
             if value is None:
                 raise ValueError("Column definition must has an index.")
-            elif type(value) is int:
+            if isinstance(value, int):
                 column_index = value
             else:
                 raise TypeError(
@@ -169,7 +169,7 @@ def parse_json_item_to_excel_definition_column(json_item: Any) -> ExcelDefinitio
         elif key.lower() == "name".lower():
             if value is None:
                 raise ValueError("Column definition must has a name.")
-            elif type(value) is str:
+            if isinstance(value, str):
                 column_name = value
             else:
                 raise TypeError(
@@ -247,41 +247,41 @@ class ExcelDefinition:
                     self.columns.append(
                         parse_json_item_to_excel_definition_column(item)
                     )
-        except TypeError or ValueError:
+        except TypeError:
             raise
-        except Exception:
+        except ValueError:
+            raise
+        except Exception as e:
             raise ValueError(
                 "The JSON structure of the excel definition file is wrong. Please check the documentation: https://github.com/SharryXu/jira-assistant"
-            )
+            ) from e
 
         return self
 
     @staticmethod
     def parse_raise_ranking_level_scope_index_expression(
-        expression: "Any | None",
-    ) -> "set[int] | None":
-        if expression is None or type(expression) is not str:
+        expression: Union[Any, None],
+    ) -> Optional[set[int]]:
+        if expression is None or not isinstance(expression, str):
             return None
-        elif len(expression) == 0 or expression.isspace():
+        if len(expression) == 0 or expression.isspace():
             return set()
-        elif (
+        if (
             RaiseRankingLevelScopeIndexValidationRule.fullmatch(
                 "".join(expression.split(" "))
             )
             is None
         ):
             return None  # None means invalid, since we don't have the parse procedure.
-        elif "-" in expression:
+        if "-" in expression:
             begin = int(expression.split("-")[0])
             end = int(expression.split("-")[1])
             if begin < end:
                 return set(i for i in range(begin, end + 1))
-            else:
-                return set(i for i in range(end, begin + 1))
-        else:
-            return set(int(i) for i in expression.split(","))
+            return set(i for i in range(end, begin + 1))
+        return set(int(i) for i in expression.split(","))
 
-    def load_file(self, file: "str | Path") -> "ExcelDefinition":
+    def load_file(self, file: Union[str, Path]) -> "ExcelDefinition":
         """
         Load json file to generate the excel definition
 
@@ -295,7 +295,7 @@ class ExcelDefinition:
         if not pathlib.Path(file).exists():
             raise ValueError(f"The file is not exist. File: {file}")
 
-        with open(file=file, mode="r") as table_definition_file:
+        with open(file=file, mode="r", encoding="utf-8") as table_definition_file:
             try:
                 self.load(table_definition_file.read())
             finally:
@@ -304,12 +304,19 @@ class ExcelDefinition:
         return self
 
     def validate(self) -> "list":
+        return (
+            self._validate_pre_process_steps()
+            + self._validate_sort_strategies()
+            + self._validate_column_definitions()
+        )
+
+    def _validate_pre_process_steps(self) -> "list[str]":
         invalid_definitions = []
 
         # Validate PreProcessSteps
         for pre_process_step in self.pre_process_steps:
             if pre_process_step["name"].isspace() or len(pre_process_step["name"]) == 0:
-                invalid_definitions.append(f"The PreProcessStep name is invalid.")
+                invalid_definitions.append("The PreProcessStep name is invalid.")
                 # If strategy name is invalid, no need to check more.
                 continue
 
@@ -323,29 +330,29 @@ class ExcelDefinition:
                     f"Only FilterOutStoryBasedOnJiraStatus step support JiraStatuses config. PreProcessStep: {pre_process_step['name']}."
                 )
 
-            if (
-                "JiraStatuses".lower()
-                in [
-                    config_name.lower()
-                    for config_name in pre_process_step["config"].keys()
-                ]
-                and type(pre_process_step["config"]["JiraStatuses"]) is not list
-            ):
+            if "JiraStatuses".lower() in [
+                config_name.lower() for config_name in pre_process_step["config"].keys()
+            ] and not isinstance(pre_process_step["config"]["JiraStatuses"], list):
                 invalid_definitions.append(
                     f"The format of the Jira Statuses is invalid. PreProcessStep: {pre_process_step['name']}. Supported format like: ['CLOSED', 'PENDING RELEASE']."
                 )
+
+        return invalid_definitions
+
+    def _validate_sort_strategies(self) -> "list[str]":
+        invalid_definitions = []
 
         # Validate Strategies
         strategy_priorities: list[int] = []
         for strategy in self.sort_strategies:
             if strategy["name"].isspace() or len(strategy["name"]) == 0:
-                invalid_definitions.append(f"The strategy name is invalid.")
+                invalid_definitions.append("The strategy name is invalid.")
                 # If strategy name is invalid, no need to check more.
                 continue
 
             if (
                 strategy["priority"] is None
-                or type(strategy["priority"]) is not int
+                or not isinstance(strategy["priority"], int)
                 or strategy["priority"] < 0
             ):
                 invalid_definitions.append(
@@ -364,19 +371,22 @@ class ExcelDefinition:
                     f"Only RaiseRanking and SortOrder strategy support ParentScopeIndexRange config. Strategy: {strategy['name']}."
                 )
 
-            if (
-                "ParentScopeIndexRange".lower()
-                in [config_name.lower() for config_name in strategy["config"].keys()]
-                and type(strategy["config"]["ParentScopeIndexRange"]) is not set
-            ):
+            if "ParentScopeIndexRange".lower() in [
+                config_name.lower() for config_name in strategy["config"].keys()
+            ] and not isinstance(strategy["config"]["ParentScopeIndexRange"], set):
                 invalid_definitions.append(
                     f"The format of the Parent Level Index Range is invalid. Strategy: {strategy['name']}. Supported format strings like: 1-20 or 20,30 or empty string."
                 )
 
         if len(strategy_priorities) != len(set(strategy_priorities)):
             invalid_definitions.append(
-                f"The priority of strategies cannot be duplicate."
+                "The priority of strategies cannot be duplicate."
             )
+
+        return invalid_definitions
+
+    def _validate_column_definitions(self) -> "list[str]":
+        invalid_definitions = []
 
         # Validate the Columns
         exist_story_id = False
@@ -406,7 +416,7 @@ class ExcelDefinition:
                 exist_story_id = True
 
             # Check Missing/Duplicate Index
-            if type(column_index) is not int:
+            if not isinstance(column_index, int):
                 invalid_definitions.append(
                     f"Column Index can only be number. Column: {column_name}"
                 )
@@ -430,30 +440,30 @@ class ExcelDefinition:
                 )
 
             # Check Sort
-            if type(column_require_sort) is not bool:
+            if not isinstance(column_require_sort, bool):
                 invalid_definitions.append(
                     f"Require Sort can only be True/False. Column: {column_name}"
                 )
 
-            if type(column_sort_order) is not bool:
+            if not isinstance(column_sort_order, bool):
                 invalid_definitions.append(
                     f"Sort Order can only be True(Descending)/False(Ascending). Column: {column_name}"
                 )
 
             # Check Sort
-            if type(column_scope_require_sort) is not bool:
+            if not isinstance(column_scope_require_sort, bool):
                 invalid_definitions.append(
                     f"Scope Require Sort can only be True/False. Column: {column_name}"
                 )
 
-            if type(column_scope_sort_order) is not bool:
+            if not isinstance(column_scope_sort_order, bool):
                 invalid_definitions.append(
                     f"Scope Sort Order can only be True(Descending)/False(Ascending). Column: {column_name}"
                 )
 
             # Check InlineWeights
             # TODO: Currently only support different line weights.
-            if type(column_inline_weights) is not int:
+            if not isinstance(column_inline_weights, int):
                 invalid_definitions.append(
                     f"Inline Weights can only be number. Column: {column_name}"
                 )
@@ -468,7 +478,7 @@ class ExcelDefinition:
                 exist_inline_weights.append(column_inline_weights)
 
             # Check RaiseRanking
-            if type(column_raise_ranking) is not int:
+            if not isinstance(column_raise_ranking, int):
                 invalid_definitions.append(
                     f"Raise Ranking can only be number. Column: {column_name}"
                 )
@@ -479,7 +489,7 @@ class ExcelDefinition:
                         f"Column do not support Raise Ranking feature. Column: {column_name}"
                     )
 
-            if type(column_scope_raise_ranking) is not int:
+            if not isinstance(column_scope_raise_ranking, int):
                 invalid_definitions.append(
                     f"Scope Raise Ranking can only be number. Column: {column_name}"
                 )
@@ -492,9 +502,8 @@ class ExcelDefinition:
 
             if column_jira_field_mapping is None:
                 continue
-            elif (
-                column_jira_field_mapping is not None
-                and type(column_jira_field_mapping) is not dict
+            if column_jira_field_mapping is not None and not isinstance(
+                column_jira_field_mapping, dict
             ):
                 invalid_definitions.append(
                     f"Jira Field Mapping can only be dictionary. Column: {column_name}"
@@ -524,31 +533,30 @@ class ExcelDefinition:
                 or self.columns[len(self.columns) - 1]["index"] != len(self.columns)
             ):
                 invalid_definitions.append(
-                    f"Column Index must be in continuation and starts from 1."
+                    "Column Index must be in continuation and starts from 1."
                 )
 
         return invalid_definitions
 
     @staticmethod
-    def convert_str_to_type(type_str: str) -> "type | None":
-        if type_str is None or type(type_str) is not str:
+    def convert_str_to_type(type_str: str) -> Optional[type]:
+        if type_str is None or not isinstance(type_str, str):
             return None
         type_str = str(type_str).strip().lower()
         if type_str.lower() == "str":
             return str
-        elif type_str.lower() == "bool":
+        if type_str.lower() == "bool":
             return bool
-        elif type_str.lower() == "datetime":
+        if type_str.lower() == "datetime":
             return datetime
-        elif type_str.lower() == "priority":
+        if type_str.lower() == "priority":
             return Priority
-        elif type_str.lower() == "milestone":
+        if type_str.lower() == "milestone":
             return Milestone
         # Currently, only support float/double
-        elif type_str.lower() == "number":
+        if type_str.lower() == "number":
             return float
-        else:
-            return None
+        return None
 
     def __iter__(self):
         for item in self.columns:
@@ -584,7 +592,6 @@ class ExcelDefinition:
 
 
 def _sort_priority_map(strategy: SortStrategy) -> int:
-    if strategy["priority"] is None or type(strategy["priority"]) is not int:
+    if strategy["priority"] is None or not isinstance(strategy["priority"], int):
         return 0
-    else:
-        return strategy["priority"]
+    return strategy["priority"]

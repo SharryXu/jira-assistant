@@ -4,10 +4,13 @@ from os import environ, remove
 from mock_server import mock_jira_requests
 from requests_mock import Mocker
 
-from jira_assistant.excel_definition import *
-from jira_assistant.excel_operation import *
-from jira_assistant.jira_client import *
-from jira_assistant.sprint_schedule import *
+from jira_assistant.excel_definition import ExcelDefinition
+from jira_assistant.excel_operation import (
+    read_excel_file,
+    run_steps_and_sort_excel_file,
+)
+from jira_assistant.jira_client import JiraClient
+from jira_assistant.sprint_schedule import SprintScheduleStore
 
 HERE = pathlib.Path(__file__).resolve().parent
 SRC_ASSETS: pathlib.Path = HERE.parent / "src/jira_assistant/assets"

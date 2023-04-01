@@ -1,6 +1,6 @@
 import pathlib
 
-from jira_assistant.sprint_schedule import *
+from jira_assistant.sprint_schedule import SprintScheduleStore
 
 HERE = pathlib.Path(__file__).resolve().parent
 SRC_ASSETS = HERE.parent / "src/jira_assistant/assets"

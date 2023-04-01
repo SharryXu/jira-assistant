@@ -19,94 +19,89 @@ class Priority(IntEnum):
         return self.name.capitalize()
 
     def __lt__(self, __o: "Priority") -> bool:
-        l = -1
-        if type(self.value) is tuple:
-            l = self.value[0]
-        elif type(self.value) is int:
-            l = self.value
-        r = -1
-        if type(__o.value) is tuple:
-            r = __o.value[0]
-        elif type(__o.value) is int:
-            r = __o.value
+        left = -1
+        if isinstance(self.value, tuple):
+            left = self.value[0]
+        elif isinstance(self.value, int):
+            left = self.value
+        right = -1
+        if isinstance(__o.value, tuple):
+            right = __o.value[0]
+        elif isinstance(__o.value, int):
+            right = __o.value
 
-        if l < r:
+        if left < right:
             return True
-        else:
-            return False
+        return False
 
     def __gt__(self, __o: "Priority") -> bool:
-        l = -1
-        if type(self.value) is tuple:
-            l = self.value[0]
-        elif type(self.value) is int:
-            l = self.value
-        r = -1
-        if type(__o.value) is tuple:
-            r = __o.value[0]
-        elif type(__o.value) is int:
-            r = __o.value
+        left = -1
+        if isinstance(self.value, tuple):
+            left = self.value[0]
+        elif isinstance(self.value, int):
+            left = self.value
+        right = -1
+        if isinstance(__o.value, tuple):
+            right = __o.value[0]
+        elif isinstance(__o.value, int):
+            right = __o.value
 
-        if l > r:
+        if left > right:
             return True
-        else:
-            return False
+        return False
 
     def __le__(self, __o: "Priority") -> bool:
-        l = -1
-        if type(self.value) is tuple:
-            l = self.value[0]
-        elif type(self.value) is int:
-            l = self.value
-        r = -1
-        if type(__o.value) is tuple:
-            r = __o.value[0]
-        elif type(__o.value) is int:
-            r = __o.value
+        left = -1
+        if isinstance(self.value, tuple):
+            left = self.value[0]
+        elif isinstance(self.value, int):
+            left = self.value
+        right = -1
+        if isinstance(__o.value, tuple):
+            right = __o.value[0]
+        elif isinstance(__o.value, int):
+            right = __o.value
 
-        if l <= r:
+        if left <= right:
             return True
-        else:
-            return False
+        return False
 
     def __ge__(self, __o: "Priority") -> bool:
-        l = -1
-        if type(self.value) is tuple:
-            l = self.value[0]
-        elif type(self.value) is int:
-            l = self.value
-        r = -1
-        if type(__o.value) is tuple:
-            r = __o.value[0]
-        elif type(__o.value) is int:
-            r = __o.value
+        left = -1
+        if isinstance(self.value, tuple):
+            left = self.value[0]
+        elif isinstance(self.value, int):
+            left = self.value
+        right = -1
+        if isinstance(__o.value, tuple):
+            right = __o.value[0]
+        elif isinstance(__o.value, int):
+            right = __o.value
 
-        if l >= r:
+        if left >= right:
             return True
-        else:
-            return False
+        return False
 
     def __eq__(self, __o: "Priority") -> bool:
         if self.value == __o.value:
             return True
-        else:
-            return False
+        return False
 
 
 def convert_to_priority(raw: Any) -> Priority:
     if raw is None:
         return Priority.NA
-    if type(raw) is Priority:
+    if isinstance(raw, Priority):
         return raw
     value = str(raw).strip().upper()
-    if value == "N/A" or value == "NA":
+    if value in ("N/A", "NA"):
         return Priority.NA
-    elif value == "LOW":
+    if value == "LOW":
         return Priority.LOW
-    elif value == "MEDIUM" or value == "MIDDLE":
+    if value in ("MEDIUM", "MIDDLE"):
         return Priority.MIDDLE
-    elif value == "HIGH":
+    if value == "HIGH":
         return Priority.HIGH
-    elif value == "CRITICAL":
+    if value == "CRITICAL":
         return Priority.CRITICAL
     return Priority.NA

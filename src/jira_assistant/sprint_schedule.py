@@ -1,6 +1,7 @@
 import json
 import pathlib
 from pathlib import Path
+from typing import Union
 
 __all__ = ["SprintScheduleStore"]
 
@@ -37,12 +38,12 @@ class SprintScheduleStore:
                     self.store.append((sprint, priority))
                 sprints.clear()
                 priority = 0
-        except Exception:
+        except Exception as e:
             raise ValueError(
                 "The JSON structure of the sprint schedule file is wrong. Please check the documentation: https://github.com/SharryXu/jira-assistant"
-            )
+            ) from e
 
-    def load_file(self, file: "str | Path"):
+    def load_file(self, file: Union[str, Path]):
         """
         Load json file to generate the excel definition
 
@@ -56,7 +57,7 @@ class SprintScheduleStore:
         if not pathlib.Path(file).exists():
             raise ValueError(f"The file is not exist. File: {file}")
 
-        with open(file=file, mode="r") as schedule_file:
+        with open(file=file, mode="r", encoding="utf-8") as schedule_file:
             try:
                 self.load(schedule_file.read())
             finally:

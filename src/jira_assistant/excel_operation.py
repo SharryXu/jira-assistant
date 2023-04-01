@@ -7,19 +7,24 @@ import warnings
 from importlib.resources import files
 from os import environ, remove
 from pathlib import Path
+from typing import Optional, Union
 
 import openpyxl
+from dotenv import load_dotenv
 from openpyxl.workbook import Workbook
 from openpyxl.worksheet._read_only import ReadOnlyWorksheet
 from openpyxl.worksheet.worksheet import Worksheet
 from urllib3 import disable_warnings
 
-from .excel_definition import *
-from .jira_client import *
-from .milestone import *
-from .priority import *
-from .sprint_schedule import *
-from .story import *
+from .excel_definition import ExcelDefinition
+from .jira_client import JiraClient
+from .sprint_schedule import SprintScheduleStore
+from .story import (
+    Story,
+    StoryFactory,
+    sort_stories_by_property_and_order,
+    sort_stories_by_raise_ranking,
+)
 
 __all__ = [
     "read_excel_file",
@@ -38,7 +43,7 @@ ASSETS = HERE / "assets"
 
 
 def read_excel_file(
-    file: "str | Path",
+    file: Union[str, Path],
     excel_definition: ExcelDefinition,
     sprint_schedule: SprintScheduleStore,
 ) -> tuple[list[str], list[Story]]:
@@ -49,41 +54,44 @@ def read_excel_file(
         The excel file that you want to read
 
     :parm excel_definition:
-        The excel column definition which is imported from the :py:class:`ExcelDefinition`
+        The excel column definition which is imported
+        from the :py:class:`ExcelDefinition`
 
     :parm sprint_schedule:
         The priority mapping for the :py:class:`Milestone` object.
 
     :return:
-        A :py:class:`tuple` object which contains a list of column name and a list of :py:class:`Story`.
+        A :py:class:`tuple` object which contains a list of column
+        name and a list of :py:class:`Story`.
     """
 
     if file is None or not pathlib.Path(file).is_absolute():
-        raise ValueError(f"The input excel file is invalid.")
+        raise ValueError("The input excel file is invalid.")
 
     if not pathlib.Path(file).exists():
         raise ValueError(f"The input excel file: {file} cannot be found.")
 
     with open(str(file), mode="rb") as raw_file:
-        wb: Workbook = openpyxl.load_workbook(
+        work_book: Workbook = openpyxl.load_workbook(
             raw_file, read_only=True, keep_vba=False, data_only=True, keep_links=True
         )
 
-        if wb.active is None or (
-            type(wb.active) is not Worksheet
-            and type(wb.active) is not ReadOnlyWorksheet
+        if work_book.active is None or (
+            not isinstance(work_book.active, Worksheet)
+            and not isinstance(work_book.active, ReadOnlyWorksheet)
         ):
-            wb.close()
+            work_book.close()
             raise ValueError("The input excel file doesn't contain any sheets.")
 
-        sheet: Worksheet = wb.active
+        sheet: Union[Worksheet, ReadOnlyWorksheet] = work_book.active
 
-        # The count of column is taking from the definition file to avoid too many columns inside the excel file.
-        # Also, need to avoid exceed the range of the actual count.
+        # The count of column is taking from the definition file to avoid too
+        # many columns inside the excel file. Also, need to avoid exceed
+        # the range of the actual count.
         column_count = min(excel_definition.max_column_index, sheet.max_column)
 
         if sheet.max_row < 2:
-            wb.close()
+            work_book.close()
             return ([], [])
 
         columns: list[str] = []
@@ -94,7 +102,7 @@ def read_excel_file(
         stories = []
 
         excel_definition_columns = excel_definition.get_columns()
-        storyFactory = StoryFactory(excel_definition_columns)
+        story_factory = StoryFactory(excel_definition_columns)
 
         for row in sheet.iter_rows(
             min_row=2, max_row=sheet.max_row, min_col=1, max_col=len(columns)
@@ -102,17 +110,19 @@ def read_excel_file(
             if _should_skip(row):
                 continue
 
-            story: Story = storyFactory.create_story()
-            for column_index in range(len(row)):
-                column = excel_definition_columns[column_index]
-                if column["name"] is None:
+            story: Story = story_factory.create_story()
+            for column_index, column in enumerate(row):
+                definition_column = excel_definition_columns[column_index]
+                if definition_column["name"] is None:
                     continue
-                story.set_value(column["type"], column["name"], row[column_index].value)
+                story.set_value(
+                    definition_column["type"], definition_column["name"], column.value
+                )
 
             story.calc_sprint_schedule(sprint_schedule)
             stories.append(story)
 
-        wb.close()
+        work_book.close()
         raw_file.close()
     return (columns, stories)
 
@@ -120,10 +130,9 @@ def read_excel_file(
 def _should_skip(row: tuple) -> bool:
     if len(row) == 0:
         return True
-    else:
-        first_cell_value = row[0].value
-        if first_cell_value is None or len(str(first_cell_value)) == 0:
-            return True
+    first_cell_value = row[0].value
+    if first_cell_value is None or len(str(first_cell_value)) == 0:
+        return True
     return False
 
 
@@ -133,7 +142,7 @@ def output_to_csv_file(
     over_write: bool = True,
 ):
     if file is None or not pathlib.Path(file).is_absolute():
-        raise ValueError(f"The file is invalid.")
+        raise ValueError("The file is invalid.")
 
     if not pathlib.Path(file).exists():
         if over_write is True:
@@ -141,7 +150,7 @@ def output_to_csv_file(
         else:
             raise ValueError(f"The csv file: {file} is already exist.")
 
-    with open(file, mode="w") as csv_file:
+    with open(file, mode="w", encoding="utf-8") as csv_file:
         separator = "-" * 300
         for story in stories:
             csv_file.write(f"{separator}\n")
@@ -149,10 +158,10 @@ def output_to_csv_file(
 
 
 def output_to_excel_file(
-    file: "str | Path",
+    file: Union[str, Path],
     stories: "list[Story]",
     excel_definition: ExcelDefinition,
-    columns_in_excel: "list[str] | None" = None,
+    columns_in_excel: Optional[Union[list[str], None]] = None,
     over_write: bool = True,
 ):
     """
@@ -165,16 +174,19 @@ def output_to_excel_file(
         A list of :py:class:`Story` which need to be wrote to the excel
 
     :parm excel_definition:
-        The excel column definition which is imported from the :py:class:`ExcelDefinition`
+        The excel column definition which is imported from
+        the :py:class:`ExcelDefinition`
 
     :parm columns_in_excel:
-        Using separate column names instead of importing from the :py:class:`ExcelDefinition`. Usually, it comes from the input excel file.
+        Using separate column names instead of importing from
+        the :py:class:`ExcelDefinition`. Usually, it comes from the
+        input excel file.
 
     :parm over_write:
         Whether or not the exist output file will be over-write.
     """
     if file is None or not pathlib.Path(file).is_absolute():
-        raise ValueError(f"The output file name is invalid.")
+        raise ValueError("The output file name is invalid.")
 
     if pathlib.Path(file).exists():
         if over_write is True:
@@ -186,15 +198,16 @@ def output_to_excel_file(
         else:
             raise ValueError(f"The output excel file: {file} is already exist.")
 
-    wb = openpyxl.Workbook(write_only=False)
+    work_book = openpyxl.Workbook(write_only=False)
 
-    if wb.active is None or (
-        type(wb.active) is not Worksheet and type(wb.active) is not Worksheet
+    if work_book.active is None or (
+        not isinstance(work_book.active, Worksheet)
+        and not isinstance(work_book.active, Worksheet)
     ):
-        wb.close()
+        work_book.close()
         raise ValueError("The output excel file cannot be generated.")
 
-    sheet: Worksheet = wb.active
+    sheet: Worksheet = work_book.active
 
     # TODO: Refactor this method to return needed properties list.
     excel_definition_columns = excel_definition.get_columns()
@@ -204,29 +217,28 @@ def output_to_excel_file(
     if columns is None:
         columns = [column["name"] for column in excel_definition_columns]
 
-    for column_index in range(len(columns)):
+    for column_index, column in enumerate(columns):
         cell = sheet.cell(row=1, column=column_index + 1)
         # There are three kinds of Cells. Only the Cell has the value attribute.
         if hasattr(cell, "value"):
-            setattr(cell, "value", columns[column_index])
+            setattr(cell, "value", column)
 
     if stories is not None:
-        for row_index in range(len(stories)):
+        for row_index, story in enumerate(stories):
             for column in excel_definition_columns:
                 if column["name"] is None:
                     continue
                 cell = sheet.cell(row=row_index + 2, column=column["index"])
                 if hasattr(cell, "value"):
-                    setattr(
-                        cell, "value", stories[row_index].format_value(column["name"])
-                    )
+                    setattr(cell, "value", story.format_value(column["name"]))
 
-    wb.save(str(file))
-    wb.close()
+    work_book.save(str(file))
+    work_book.close()
 
 
-def _query_jira_information(stories: list[Story], excel_definition: ExcelDefinition):
-    from dotenv import load_dotenv
+def _query_jira_information(
+    stories: list[Story], excel_definition: ExcelDefinition
+) -> bool:
 
     load_dotenv(ASSETS / ".env")
 
@@ -240,7 +252,7 @@ def _query_jira_information(stories: list[Story], excel_definition: ExcelDefinit
         print(
             "The jira url is invalid. Please use the update-jira-info command to add/update url."
         )
-        return
+        return False
 
     jira_acccess_token: str | None = environ.get("JIRA_ACCESS_TOKEN", default=None)
     if (
@@ -251,7 +263,7 @@ def _query_jira_information(stories: list[Story], excel_definition: ExcelDefinit
         print(
             "The jira access token is invalid. Please use the update-jira-info command to add/update token."
         )
-        return
+        return False
 
     jira_client = JiraClient(jira_url, jira_acccess_token)
 
@@ -259,7 +271,7 @@ def _query_jira_information(stories: list[Story], excel_definition: ExcelDefinit
         print(
             "The jira access token is revoked. Please use the update-jira-info command to add/update token."
         )
-        return
+        return False
 
     print(f"Jira info: {jira_url}")
 
@@ -271,14 +283,13 @@ def _query_jira_information(stories: list[Story], excel_definition: ExcelDefinit
             or definition_column["jira_field_mapping"] is None
         ):
             continue
-        else:
-            jira_fields.append(
-                {
-                    "name": definition_column["name"],
-                    "jira_name": definition_column["jira_field_mapping"]["name"],
-                    "jira_path": definition_column["jira_field_mapping"]["path"],
-                }
-            )
+        jira_fields.append(
+            {
+                "name": definition_column["name"],
+                "jira_name": definition_column["jira_field_mapping"]["name"],
+                "jira_path": definition_column["jira_field_mapping"]["path"],
+            }
+        )
 
     jira_query_result = jira_client.get_stories_detail(
         [story["storyId"].strip() for story in stories], jira_fields
@@ -308,12 +319,14 @@ def _query_jira_information(stories: list[Story], excel_definition: ExcelDefinit
                 story.need_sort = False  # TODO: Avoid NoneType compare issue.
                 continue
 
+    return True
+
 
 def run_steps_and_sort_excel_file(
-    input_file: "str | Path",
-    output_file: "str | Path",
-    excel_definition_file: "str | Path | None" = None,
-    sprint_schedule_file: "str | Path | None" = None,
+    input_file: Union[str, Path],
+    output_file: Union[str, Path],
+    excel_definition_file: Optional[Union[str, Path]] = None,
+    sprint_schedule_file: Optional[Union[str, Path]] = None,
     over_write: bool = True,
 ):
     """
@@ -362,8 +375,7 @@ def run_steps_and_sort_excel_file(
         for item in validation_result:
             print(item)
         return
-    else:
-        print("Validating excel definition success.")
+    print("Validating excel definition success.")
 
     excel_columns, stories = read_excel_file(
         input_file, excel_definition, sprint_schedule
@@ -390,7 +402,11 @@ def run_steps_and_sort_excel_file(
                 for story in stories:
                     if story.need_sort:
                         stories_need_call_jira.append(story)
-                _query_jira_information(stories_need_call_jira, excel_definition)
+                if not _query_jira_information(
+                    stories_need_call_jira, excel_definition
+                ):
+                    print("Retrieve jira information failed.")
+                    return
         elif pre_process_step["name"].lower() in "FilterOutStoryWithoutId".lower():
             for story in stories:
                 if story["storyId"] is None:
@@ -404,7 +420,7 @@ def run_steps_and_sort_excel_file(
                     "status"
                 ].upper() in pre_process_step["config"].get("JiraStatuses", []):
                     story.need_sort = False
-        print(f"Executing finish.")
+        print("Executing finish.")
 
     stories_no_need_sort = []
     stories_need_sort = []
@@ -422,7 +438,7 @@ def run_steps_and_sort_excel_file(
         print(f"Executing {sort_strategy['name']} sorting...")
         if sort_strategy["name"] is None:
             continue
-        elif sort_strategy["name"].lower() in "InlineWeights".lower():
+        if sort_strategy["name"].lower() in "InlineWeights".lower():
             stories_need_sort = sorted(stories_need_sort, reverse=True)
         elif sort_strategy["name"].lower() in "SortOrder".lower():
             sort_stories_by_property_and_order(
@@ -432,7 +448,7 @@ def run_steps_and_sort_excel_file(
             stories_need_sort = sort_stories_by_raise_ranking(
                 stories_need_sort, excel_definition, sort_strategy["config"]
             )
-        print(f"Executing finish.")
+        print("Executing finish.")
 
     output_to_excel_file(
         output_file,

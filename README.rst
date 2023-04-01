@@ -1,19 +1,31 @@
 Jira Assistant - userful jira tools
 =============================================
 
-|pypi| |python 3.11| |python 3.11 (Mac OS)| |CodeQL| |Documentation| |Codecov|
+|pypi| |Download| |Linux| |Windows| |Mac OS| |Pylint| |CodeQL| |Documentation| |Codecov| |CodeClimate|
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/jira-assistant.svg?style=flat-square
     :target https://pypi.org/project/jira-assistant/
     :alt: pypi version
 
-.. |python 3.11| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-test.yml/badge.svg
-    :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-test.yml
-    :alt: python 3.11
+.. |Download| image:: https://static.pepy.tech/personalized-badge/jira-assistant?period=month&units=international_system&left_color=black&right_color=blue&left_text=downloads/month
+    :target: https://pepy.tech/project/jira-assistant
+    :alt: download
 
-.. |python 3.11 (Mac OS)| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-macos-test.yml/badge.svg
+.. |Linux| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-linux-test.yml/badge.svg
+    :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-linux-test.yml
+    :alt: python 3.11 (Linux)
+
+.. |Mac OS| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-macos-test.yml/badge.svg
     :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-macos-test.yml
     :alt: python 3.11 (Mac OS)
+
+.. |Windows| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-windows-test.yml/badge.svg
+    :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-windows-test.yml
+    :alt: python 3.11 (Windows)
+
+.. |Pylint| image:: https://github.com/sharryxu/jira-assistant/workflows/pylint.yml/badge.svg
+    :target: https://github.com/SharryXu/jira-assistant/actions/workflows/pylint.yml
+    :alt: Pylint 
 
 .. |CodeQL| image:: https://github.com/sharryxu/jira-assistant/workflows/CodeQL/badge.svg
     :target: https://github.com/SharryXu/jira-assistant/actions/workflows/CodeQL.yml
@@ -26,6 +38,10 @@ Jira Assistant - userful jira tools
 .. |Codecov| image:: https://codecov.io/gh/SharryXu/jira-assistant/branch/main/graph/badge.svg?token=BLI8NMS6S6 
     :target: https://codecov.io/gh/SharryXu/jira-assistant
     :alt: Codecov
+
+.. |CodeClimate| image:: https://api.codeclimate.com/v1/badges/aeae36dcbb250784672b/maintainability
+   :target: https://codeclimate.com/github/SharryXu/jira-assistant/maintainability
+   :alt: Maintainability
 
 Installation
 ============
