@@ -37,7 +37,7 @@ class TestJiraClient:
             client = JiraClient(os.environ["JIRA_URL"], os.environ["JIRA_ACCESS_TOKEN"])
 
             stories = client.get_stories_detail(
-                [story_id for story_id in mock_jira_stories.keys()],
+                list(mock_jira_stories.keys()),
                 [
                     {
                         "name": "domain",

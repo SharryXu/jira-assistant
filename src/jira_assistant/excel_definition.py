@@ -502,7 +502,7 @@ class ExcelDefinition:
 
             if column_jira_field_mapping is None:
                 continue
-            elif column_jira_field_mapping is not None and not isinstance(
+            if column_jira_field_mapping is not None and not isinstance(
                 column_jira_field_mapping, dict
             ):
                 invalid_definitions.append(
