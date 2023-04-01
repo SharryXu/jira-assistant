@@ -14,7 +14,7 @@ from .sprint_schedule import SprintScheduleStore
 __all__ = ["Milestone"]
 
 
-class Milestone(object):
+class Milestone:
     # TODO: __init__ method cannot have classmethod attribute! Otherwise, all instance will point to the same one.
     def __init__(self, raw: Any) -> None:
         self.raw: str = raw
@@ -38,35 +38,29 @@ class Milestone(object):
     def __str__(self) -> str:
         if self.raw is None:
             return ""
-        else:
-            return self.raw
+        return self.raw
 
     def __lt__(self, __o: "Milestone") -> bool:
         if self.priority < __o.priority:
             return True
-        else:
-            return False
+        return False
 
     def __gt__(self, __o: "Milestone") -> bool:
         if self.priority > __o.priority:
             return True
-        else:
-            return False
+        return False
 
     def __le__(self, __o: "Milestone") -> bool:
         if self.priority <= __o.priority:
             return True
-        else:
-            return False
+        return False
 
     def __ge__(self, __o: "Milestone") -> bool:
         if self.priority >= __o.priority:
             return True
-        else:
-            return False
+        return False
 
     def __eq__(self, __o: "Milestone") -> bool:
         if self.priority == __o.priority:
             return True
-        else:
-            return False
+        return False

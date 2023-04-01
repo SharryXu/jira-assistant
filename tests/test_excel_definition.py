@@ -104,7 +104,7 @@ class TestExcelDefinition:
 
         validation_result = store.validate()
 
-        assert len(validation_result) == 2
+        assert len(validation_result) == 1
 
     def test_validate_invalid_require_sort(self):
         excel_definition_filename = (

@@ -4,11 +4,15 @@ This module is used to provide the console program.
 """
 import os
 import pathlib
+import sys
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from datetime import datetime
 from importlib.resources import files
 from pathlib import Path
+from shutil import copyfile
 from urllib.parse import ParseResult, urlparse
+
+from dotenv import set_key
 
 from .excel_definition import ExcelDefinition
 from .excel_operation import output_to_excel_file, run_steps_and_sort_excel_file
@@ -71,11 +75,11 @@ def process_excel_file() -> None:
 
         if input_file_absolute_path.suffix.lower() != ".xlsx":
             print(f"Please provide an Excel file. File: {input_file_absolute_path}.")
-            exit(1)
+            sys.exit(1)
 
         if not os.path.exists(input_file_absolute_path):
             print(f"Input file is not exist. File: {input_file_absolute_path}.")
-            exit(1)
+            sys.exit(1)
 
         input_file_name_without_extension = input_file_absolute_path.stem
 
@@ -140,7 +144,7 @@ def process_excel_file() -> None:
                 print(
                     f"Please provide an JSON file for sprint schedule. File: {sprint_schedule_file_absolute_path}."
                 )
-                exit(1)
+                sys.exit(1)
 
         # Over write parameter.
         over_write = True
@@ -155,10 +159,10 @@ def process_excel_file() -> None:
             over_write,
         )
 
-        exit(0)
+        sys.exit(0)
     except Exception as e:
         print(e)
-        exit(1)
+        sys.exit(1)
 
 
 def get_args_for_generate_template() -> Namespace:
@@ -180,8 +184,6 @@ def get_args_for_generate_template() -> Namespace:
 
 HERE = pathlib.Path(__file__).resolve().parent
 SRC_ASSETS = HERE / "assets"
-
-from shutil import copyfile
 
 
 def generate_template():
@@ -212,13 +214,13 @@ def generate_template():
 
         if result is not None and result.is_file():
             print(f"Generate success! Template type: {template_type}.")
-            exit(0)
+            sys.exit(0)
         else:
             print(f"Generate failed! Template type: {template_type}.")
-            exit(1)
+            sys.exit(1)
     except Exception as e:
         print(e)
-        exit(1)
+        sys.exit(1)
 
 
 def _generate_timestamp_filename(prefix: str, extension: str) -> "Path":
@@ -269,8 +271,6 @@ def update_jira_info():
     try:
         args = get_args_for_update_jira_info()
 
-        from dotenv import set_key
-
         env_file: Path = SRC_ASSETS / ".env"
 
         if not env_file.exists():
@@ -280,7 +280,7 @@ def update_jira_info():
         if args.url is not None:
             parsed_url: ParseResult = urlparse(str(args.url))
 
-            if parsed_url.scheme != "https" and parsed_url.scheme != "http":
+            if parsed_url.scheme not in ("https", "http"):
                 print("Please check the jira url.")
             else:
                 result, _, _ = set_key(
@@ -301,7 +301,7 @@ def update_jira_info():
 
             if len(access_token.strip()) == 0 or access_token.isspace():
                 print("Please check the access token.")
-                exit(1)
+                sys.exit(1)
             else:
                 result, _, _ = set_key(
                     env_file,
@@ -312,10 +312,10 @@ def update_jira_info():
 
                 if result is True:
                     print("Add/Update jira access token success!")
-                    exit(0)
+                    sys.exit(0)
                 else:
                     print("Add/Update jira access token failed!")
-                    exit(1)
+                    sys.exit(1)
     except Exception as e:
         print(e)
-        exit(1)
+        sys.exit(1)
