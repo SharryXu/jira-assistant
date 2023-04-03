@@ -161,7 +161,7 @@ def output_to_excel_file(
     file: Union[str, Path],
     stories: "list[Story]",
     excel_definition: ExcelDefinition,
-    columns_in_excel: Optional[Union[list[str], None]] = None,
+    columns_in_excel: Optional[list[str]] = None,
     over_write: bool = True,
 ):
     """

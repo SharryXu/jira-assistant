@@ -123,19 +123,19 @@ class Story:
                 self[column["name"]].calc_priority(sprint_schedule)
 
     # Currently, comparing story only consider the Priority properties.
-    def __lt__(self, __o: "Story | None") -> bool:
+    def __lt__(self, __o: "Optional[Story]") -> bool:
         return self.factory.compare_story(self, __o) < 0
 
-    def __le__(self, __o: "Story | None") -> bool:
+    def __le__(self, __o: "Optional[Story]") -> bool:
         return self.factory.compare_story(self, __o) <= 0
 
-    def __gt__(self, __o: "Story | None") -> bool:
+    def __gt__(self, __o: "Optional[Story]") -> bool:
         return self.factory.compare_story(self, __o) > 0
 
-    def __ge__(self, __o: "Story | None") -> bool:
+    def __ge__(self, __o: "Optional[Story]") -> bool:
         return self.factory.compare_story(self, __o) >= 0
 
-    def __eq__(self, __o: "Story | None") -> bool:
+    def __eq__(self, __o: "Optional[Story]") -> bool:
         return self.factory.compare_story(self, __o) == 0
 
     # For CSV consideration.
