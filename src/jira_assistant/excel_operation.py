@@ -22,6 +22,7 @@ from .sprint_schedule import SprintScheduleStore
 from .story import (
     Story,
     StoryFactory,
+    sort_stories_by_inline_weights,
     sort_stories_by_property_and_order,
     sort_stories_by_raise_ranking,
 )
@@ -137,31 +138,29 @@ def _should_skip(row: tuple) -> bool:
 
 
 def output_to_csv_file(
-    file: str,
+    file: Union[str, Path],
     stories: "list[Story]",
     over_write: bool = True,
 ):
     if file is None or not pathlib.Path(file).is_absolute():
         raise ValueError("The file is invalid.")
 
-    if not pathlib.Path(file).exists():
+    if pathlib.Path(file).exists():
         if over_write is True:
             remove(file)
         else:
             raise ValueError(f"The csv file: {file} is already exist.")
 
-    with open(file, mode="w", encoding="utf-8") as csv_file:
-        separator = "-" * 300
+    with open(file, mode="x+", encoding="utf-8") as csv_file:
         for story in stories:
-            csv_file.write(f"{separator}\n")
-            csv_file.write(str(story))
+            csv_file.writelines([str(story)])
 
 
 def output_to_excel_file(
     file: Union[str, Path],
     stories: "list[Story]",
     excel_definition: ExcelDefinition,
-    columns_in_excel: Optional[Union[list[str], None]] = None,
+    columns_in_excel: Optional[list[str]] = None,
     over_write: bool = True,
 ):
     """
@@ -439,7 +438,7 @@ def run_steps_and_sort_excel_file(
         if sort_strategy["name"] is None:
             continue
         if sort_strategy["name"].lower() in "InlineWeights".lower():
-            stories_need_sort = sorted(stories_need_sort, reverse=True)
+            stories_need_sort = sort_stories_by_inline_weights(stories_need_sort)
         elif sort_strategy["name"].lower() in "SortOrder".lower():
             sort_stories_by_property_and_order(
                 stories_need_sort, excel_definition, sort_strategy["config"]

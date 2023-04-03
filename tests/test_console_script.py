@@ -16,6 +16,8 @@ class TestConsoleScript:
                 HERE / "files/happy_path.xlsx",
                 "--excel_definition_file",
                 HERE / "files/excel_definition_avoid_jira_operations.json",
+                "--sprint_schedule_file",
+                HERE / "files/sprint_schedule.json",
             ],
             capture_output=True,
             check=True,

@@ -1,5 +1,7 @@
 import pathlib
 
+from pytest import raises
+
 from jira_assistant.milestone import Milestone
 from jira_assistant.sprint_schedule import SprintScheduleStore
 
@@ -31,7 +33,19 @@ class TestMilestone:
         m_4 = Milestone("R141")
         m_4.calc_priority(store)
         assert m_1 < m_2
+        with raises(AssertionError):
+            assert m_1 > m_2
         assert m_1 <= m_2
+        with raises(AssertionError):
+            assert m_1 >= m_2
         assert m_2 >= m_1
         assert m_2 == m_3
         assert m_3 == m_4
+        assert m_4 > m_1
+        with raises(AssertionError):
+            assert m_1 == m_4
+
+    def test_str(self):
+        m_1 = Milestone(None)
+
+        assert len(str(m_1)) == 0

@@ -10,6 +10,7 @@ from datetime import datetime
 from importlib.resources import files
 from pathlib import Path
 from shutil import copyfile
+from typing import Optional
 from urllib.parse import ParseResult, urlparse
 
 from dotenv import set_key
@@ -230,7 +231,7 @@ def _generate_timestamp_filename(prefix: str, extension: str) -> "Path":
     ).resolve()
 
 
-def _generate_excel_template(output_file: "Path") -> "Path | None":
+def _generate_excel_template(output_file: "Path") -> Optional[Path]:
     try:
         excel_definition = ExcelDefinition().load(
             files("jira_assistant.assets").joinpath("excel_definition.json").read_text()

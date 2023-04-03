@@ -462,7 +462,6 @@ class ExcelDefinition:
                 )
 
             # Check InlineWeights
-            # TODO: Currently only support different line weights.
             if not isinstance(column_inline_weights, int):
                 invalid_definitions.append(
                     f"Inline Weights can only be number. Column: {column_name}"
@@ -473,7 +472,7 @@ class ExcelDefinition:
                     and column_inline_weights in exist_inline_weights
                 ):
                     invalid_definitions.append(
-                        f"Duplicate Inline Weights. Column: {column_name}"
+                        f"Duplicate Inline Weights. Currently only support different line weights. Column: {column_name}"
                     )
                 exist_inline_weights.append(column_inline_weights)
 

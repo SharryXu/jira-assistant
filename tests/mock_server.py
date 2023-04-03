@@ -45,10 +45,44 @@ def mock_jira_requests() -> Adapter:
     return adapter
 
 
-def mock_server_info_response(request: _RequestObjectProxy) -> Response:
+def custom_matcher_with_failed_status_code(
+    request: _RequestObjectProxy,
+) -> Response | None:
+    if (
+        search(pattern="rest/api/2/search", string=request.path, flags=IGNORECASE)
+        is not None
+    ):
+        return mock_search_response(request, status_code=400)
+    if (
+        search(pattern="rest/api/2/field", string=request.path, flags=IGNORECASE)
+        is not None
+    ):
+        return mock_field_response(request, status_code=400)
+    if (
+        search(pattern="rest/api/2/myself", string=request.path, flags=IGNORECASE)
+        is not None
+    ):
+        return mock_myself_response(request, status_code=400)
+    if (
+        search(pattern="rest/api/2/serverinfo", string=request.path, flags=IGNORECASE)
+        is not None
+    ):
+        return mock_server_info_response(request)
+    return None
+
+
+def mock_jira_requests_with_failed_status_code() -> Adapter:
+    adapter = Adapter(False)
+    adapter.add_matcher(custom_matcher_with_failed_status_code)  # type: ignore
+    return adapter
+
+
+def mock_server_info_response(
+    request: _RequestObjectProxy, status_code: int = 200
+) -> Response:
     return create_response(
         request=request,
-        status_code=200,
+        status_code=status_code,
         json={
             "baseUrl": "https://your_jira.com",
             "version": "8.20.13",
@@ -64,10 +98,12 @@ def mock_server_info_response(request: _RequestObjectProxy) -> Response:
     )
 
 
-def mock_myself_response(request: _RequestObjectProxy) -> Response:
+def mock_myself_response(
+    request: _RequestObjectProxy, status_code: int = 200
+) -> Response:
     return create_response(
         request=request,
-        status_code=200,
+        status_code=status_code,
         json={
             "self": "https://your_jira.com/rest/api/2/user?username=sharry.xu",
             "key": "sharry.xu",
@@ -91,7 +127,9 @@ def mock_myself_response(request: _RequestObjectProxy) -> Response:
     )
 
 
-def mock_search_response(request: _RequestObjectProxy) -> Response:
+def mock_search_response(
+    request: _RequestObjectProxy, status_code: int = 200
+) -> Response:
     story_ids = [
         story_id.strip("'")
         for story_id in request.qs["jql"][0]
@@ -126,13 +164,15 @@ def mock_search_response(request: _RequestObjectProxy) -> Response:
             }
         )
 
-    return create_response(request=request, status_code=200, json=response_json)
+    return create_response(request=request, status_code=status_code, json=response_json)
 
 
-def mock_field_response(request: _RequestObjectProxy) -> Response:
+def mock_field_response(
+    request: _RequestObjectProxy, status_code: int = 200
+) -> Response:
     return create_response(
         request=request,
-        status_code=200,
+        status_code=status_code,
         json=[
             {
                 "id": "status",
