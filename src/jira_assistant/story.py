@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 from decimal import Decimal
+from functools import cmp_to_key
 from operator import attrgetter
 from typing import Any, Optional
 
@@ -19,6 +20,8 @@ __all__ = [
     "convert_to_decimal",
     "sort_stories_by_property_and_order",
     "sort_stories_by_raise_ranking",
+    "sort_stories_by_inline_weights",
+    "compare_story_based_on_inline_weights",
 ]
 
 
@@ -124,19 +127,19 @@ class Story:
 
     # Currently, comparing story only consider the Priority properties.
     def __lt__(self, __o: "Optional[Story]") -> bool:
-        return self.factory.compare_story(self, __o) < 0
+        raise TypeError("unsupported operand type(s) for comparing story.")
 
     def __le__(self, __o: "Optional[Story]") -> bool:
-        return self.factory.compare_story(self, __o) <= 0
+        raise TypeError("unsupported operand type(s) for comparing story.")
 
     def __gt__(self, __o: "Optional[Story]") -> bool:
-        return self.factory.compare_story(self, __o) > 0
+        raise TypeError("unsupported operand type(s) for comparing story.")
 
     def __ge__(self, __o: "Optional[Story]") -> bool:
-        return self.factory.compare_story(self, __o) >= 0
+        raise TypeError("unsupported operand type(s) for comparing story.")
 
     def __eq__(self, __o: "Optional[Story]") -> bool:
-        return self.factory.compare_story(self, __o) == 0
+        raise TypeError("unsupported operand type(s) for comparing story.")
 
     # For CSV consideration.
     def __str__(self):
@@ -156,120 +159,134 @@ class StoryFactory:
         if columns is None:
             raise ValueError("Columns must be provided!")
         self._columns = columns
-        self._compare_rules = self.__generate_compare_rules()
+        self._inline_weight_compare_rules = (
+            self.__generate_inline_weights_compare_rules()
+        )
 
-    def __generate_compare_rules(self) -> "list[tuple[str, int]]":
-        compare_rules = []
+    def __generate_inline_weights_compare_rules(self) -> "list[tuple[str, int]]":
+        rules = []
         for column in self._columns:
             if column["inline_weights"] > 0:
-                compare_rules.append((column["name"], column["inline_weights"]))
-        compare_rules.sort(key=lambda r: r[1], reverse=True)
-        return compare_rules
+                rules.append((column["name"], column["inline_weights"]))
+        rules.sort(key=lambda r: r[1], reverse=True)
+        return rules
 
     @property
     def columns(self):
         return self._columns
 
     @property
-    def compare_rules(self) -> "list[tuple[str, int]]":
-        return self._compare_rules
+    def inline_weights_compare_rules(self) -> "list[tuple[str, int]]":
+        return self._inline_weight_compare_rules
 
     def create_story(self) -> Story:
         return Story(self)
 
-    def compare_story(self, story_a: Optional[Story], story_b: Optional[Story]) -> int:
-        """
-        Compare two stories.
 
-        :parm a:
-            First story
-        :parm b:
-            Second story
-        :parm sort_rule:
-            Priority information
-        :return
-            1: means a > b
-            0: means a == b
-            -1: means a < b
-        """
-        if story_a is None or story_b is None:
-            raise ValueError("The compare stories cannot be None.")
+def sort_stories_by_inline_weights(stories: "list[Story]") -> "list[Story]":
+    return sorted(
+        stories, key=cmp_to_key(compare_story_based_on_inline_weights), reverse=True
+    )
 
-        if (
-            story_a.factory != story_b.factory
-            or story_a.factory != self
-            or story_b.factory != self
-        ):
-            raise ValueError("The compare stories were built by different factory.")
 
-        rules_count = len(self.compare_rules)
+def compare_story_based_on_inline_weights(
+    story_a: Optional[Story], story_b: Optional[Story]
+) -> int:
+    """
+    Compare two stories.
 
-        if rules_count == 0:
-            return 0
+    :parm a:
+        First story
+    :parm b:
+        Second story
+    :parm sort_rule:
+        Priority information
+    :return
+        1: means a > b
+        0: means a == b
+        -1: means a < b
+    """
+    if story_a is None or story_b is None:
+        raise ValueError("The compare stories cannot be None.")
 
-        skip_index_of_a = []
-        skip_index_of_b = []
-        count = rules_count
-        while count > 0:
-            # property_value, property_location
-            highest_property_of_a = None
-            highest_property_of_b = None
-            for i, compare_rule in enumerate(self.compare_rules):
-                if i in skip_index_of_a:
-                    continue
+    if (
+        story_a.factory != story_b.factory
+        or story_a.factory is None
+        or story_b.factory is None
+    ):
+        raise ValueError("The compare stories were built by different factory.")
 
-                if highest_property_of_a is None:
-                    # property_value, property_location
-                    highest_property_of_a = (story_a[compare_rule[0]], i)
+    # story a and b have the same factory.
+    compare_rules: list[tuple[str, int]] = story_a.factory.inline_weights_compare_rules
 
-                if story_a[compare_rule[0]] > highest_property_of_a[0]:
-                    highest_property_of_a = (story_a[compare_rule[0]], i)
+    rules_count = len(compare_rules)
 
-            for i, compare_rule in enumerate(self.compare_rules):
-                if i in skip_index_of_b:
-                    continue
+    if rules_count == 0:
+        return 0
 
-                if highest_property_of_b is None:
-                    highest_property_of_b = (story_b[compare_rule[0]], i)
-
-                if story_b[compare_rule[0]] > highest_property_of_b[0]:
-                    highest_property_of_b = (story_b[compare_rule[0]], i)
+    skip_index_of_a = []
+    skip_index_of_b = []
+    count = rules_count
+    while count > 0:
+        # property_value, property_location
+        highest_property_of_a = None
+        highest_property_of_b = None
+        for i, compare_rule in enumerate(compare_rules):
+            if i in skip_index_of_a:
+                continue
 
             if highest_property_of_a is None:
-                highest_property_of_a = (Priority.NA, count)
-            else:
-                skip_index_of_a.append(highest_property_of_a[1])
+                # property_value, property_location
+                highest_property_of_a = (story_a[compare_rule[0]], i)
+
+            if story_a[compare_rule[0]] > highest_property_of_a[0]:
+                highest_property_of_a = (story_a[compare_rule[0]], i)
+
+        for i, compare_rule in enumerate(compare_rules):
+            if i in skip_index_of_b:
+                continue
 
             if highest_property_of_b is None:
-                highest_property_of_b = (Priority.NA, count)
-            else:
-                skip_index_of_b.append(highest_property_of_b[1])
+                highest_property_of_b = (story_b[compare_rule[0]], i)
 
-            # priority value
+            if story_b[compare_rule[0]] > highest_property_of_b[0]:
+                highest_property_of_b = (story_b[compare_rule[0]], i)
+
+        if highest_property_of_a is None:
+            highest_property_of_a = (Priority.NA, count)
+        else:
+            skip_index_of_a.append(highest_property_of_a[1])
+
+        if highest_property_of_b is None:
+            highest_property_of_b = (Priority.NA, count)
+        else:
+            skip_index_of_b.append(highest_property_of_b[1])
+
+        # priority value
+        if highest_property_of_a[0] > highest_property_of_b[0]:
+            return 1
+        if highest_property_of_a[0] == highest_property_of_b[0]:
+            if highest_property_of_a[1] < highest_property_of_b[1]:
+                return 1
+            if highest_property_of_a[1] > highest_property_of_b[1]:
+                return -1
+        else:
+            return -1
+
+        # property location
+        if highest_property_of_a[1] > highest_property_of_b[1]:
+            return 1
+        if highest_property_of_a[1] == highest_property_of_b[1]:
             if highest_property_of_a[0] > highest_property_of_b[0]:
                 return 1
-            if highest_property_of_a[0] == highest_property_of_b[0]:
-                if highest_property_of_a[1] < highest_property_of_b[1]:
-                    return 1
-                if highest_property_of_a[1] > highest_property_of_b[1]:
-                    return -1
-            else:
+            if highest_property_of_a[0] < highest_property_of_b[0]:
                 return -1
+        else:
+            return -1
 
-            # property location
-            if highest_property_of_a[1] > highest_property_of_b[1]:
-                return 1
-            if highest_property_of_a[1] == highest_property_of_b[1]:
-                if highest_property_of_a[0] > highest_property_of_b[0]:
-                    return 1
-                if highest_property_of_a[0] < highest_property_of_b[0]:
-                    return -1
-            else:
-                return -1
-
-            count -= 1
-            continue
-        return 0
+        count -= 1
+        continue
+    return 0
 
 
 def sort_stories_by_property_and_order(

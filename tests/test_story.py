@@ -1,9 +1,13 @@
 from jira_assistant.excel_definition import ExcelDefinitionColumn
 from jira_assistant.priority import Priority
-from jira_assistant.story import StoryFactory
+from jira_assistant.story import (
+    Story,
+    StoryFactory,
+    compare_story_based_on_inline_weights,
+)
 
 
-def mock_data() -> list:
+def mock_data() -> list[Story]:
     story_factory = StoryFactory(
         [
             ExcelDefinitionColumn(
@@ -159,7 +163,7 @@ def mock_data() -> list:
 
 
 class TestStory:
-    def test_compare_story(self):
+    def test_compare_story_based_on_inline_weight(self):
         data = mock_data()
         s_1 = data[0]
         s_2 = data[1]
@@ -170,15 +174,15 @@ class TestStory:
         s_7 = data[6]
         s_8 = data[7]
         s_9 = data[8]
-        assert s_1 < s_2
-        assert s_1 < s_3
-        assert s_2 < s_3
-        assert s_3 < s_5
-        assert s_2 < s_5
-        assert s_4 < s_5
-        assert s_1 < s_5
-        assert s_6 < s_7
-        assert s_8 < s_9
+        assert compare_story_based_on_inline_weights(s_1, s_2) < 0
+        assert compare_story_based_on_inline_weights(s_1, s_3) < 0
+        assert compare_story_based_on_inline_weights(s_2, s_3) < 0
+        assert compare_story_based_on_inline_weights(s_3, s_5) < 0
+        assert compare_story_based_on_inline_weights(s_2, s_5) < 0
+        assert compare_story_based_on_inline_weights(s_4, s_5) < 0
+        assert compare_story_based_on_inline_weights(s_1, s_5) < 0
+        assert compare_story_based_on_inline_weights(s_6, s_7) < 0
+        assert compare_story_based_on_inline_weights(s_8, s_9) < 0
 
     def test_compare_story_property(self):
         data = mock_data()
@@ -186,11 +190,3 @@ class TestStory:
         s_9 = data[8]
         assert s_8["name"] < s_9["name"]
         assert s_8["productValue"] < s_9["productValue"]
-
-    def test_sort_stories_by_property_and_order(self):
-        data = mock_data()
-
-        stories = sorted(data, reverse=False)
-
-        for i in range(len(stories) - 1):
-            assert stories[i] <= stories[i + 1]

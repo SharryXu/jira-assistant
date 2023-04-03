@@ -11,6 +11,7 @@ from jira_assistant.excel_operation import (
 )
 from jira_assistant.jira_client import JiraClient
 from jira_assistant.sprint_schedule import SprintScheduleStore
+from jira_assistant.story import compare_story_based_on_inline_weights
 
 HERE = pathlib.Path(__file__).resolve().parent
 SRC_ASSETS: pathlib.Path = HERE.parent / "src/jira_assistant/assets"
@@ -81,7 +82,12 @@ class TestExcelOperation:
                     and query_result[story_id_1]["status"].upper()
                     not in noneed_sort_statuses
                 ):
-                    assert stories[i] >= stories[i + 1]
+                    assert (
+                        compare_story_based_on_inline_weights(
+                            stories[i], stories[i + 1]
+                        )
+                        >= 0
+                    )
 
             remove(HERE / "files/happy_path_sorted.xlsx")
 

@@ -22,6 +22,7 @@ from .sprint_schedule import SprintScheduleStore
 from .story import (
     Story,
     StoryFactory,
+    sort_stories_by_inline_weights,
     sort_stories_by_property_and_order,
     sort_stories_by_raise_ranking,
 )
@@ -439,7 +440,7 @@ def run_steps_and_sort_excel_file(
         if sort_strategy["name"] is None:
             continue
         if sort_strategy["name"].lower() in "InlineWeights".lower():
-            stories_need_sort = sorted(stories_need_sort, reverse=True)
+            stories_need_sort = sort_stories_by_inline_weights(stories_need_sort)
         elif sort_strategy["name"].lower() in "SortOrder".lower():
             sort_stories_by_property_and_order(
                 stories_need_sort, excel_definition, sort_strategy["config"]
