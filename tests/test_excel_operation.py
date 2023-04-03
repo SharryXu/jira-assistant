@@ -6,6 +6,7 @@ from requests_mock import Mocker
 
 from jira_assistant.excel_definition import ExcelDefinition
 from jira_assistant.excel_operation import (
+    output_to_csv_file,
     read_excel_file,
     run_steps_and_sort_excel_file,
 )
@@ -29,6 +30,23 @@ class TestExcelOperation:
         )
         assert len(columns) == 24
         assert len(stories) == 8
+
+    def test_output_to_csv_file(self):
+        excel_definition = ExcelDefinition()
+        excel_definition.load_file(SRC_ASSETS / "excel_definition.json")
+        sprint_schedule = SprintScheduleStore()
+        sprint_schedule.load_file(SRC_ASSETS / "sprint_schedule.json")
+
+        _, stories = read_excel_file(
+            HERE / "files/happy_path.xlsx", excel_definition, sprint_schedule
+        )
+
+        output_to_csv_file(HERE / "files/happy_path.csv", stories)
+
+        with open(HERE / "files/happy_path.csv", mode="r", encoding="utf-8") as file:
+            assert "," in file.readline()
+
+        remove(HERE / "files/happy_path.csv")
 
     def test_run_steps_and_sort_excel_file(self):
         with Mocker(
@@ -91,7 +109,7 @@ class TestExcelOperation:
 
             remove(HERE / "files/happy_path_sorted.xlsx")
 
-    def test_run_steps_and_sort_excel_file_with_empty_file(self):
+    def test_run_steps_and_sort_excel_file_with_empty_excel_file(self):
         with Mocker(
             real_http=False, case_sensitive=False, adapter=mock_jira_requests()
         ):
@@ -101,3 +119,37 @@ class TestExcelOperation:
                 excel_definition_file=str(SRC_ASSETS / "excel_definition.json"),
                 sprint_schedule_file=str(SRC_ASSETS / "sprint_schedule.json"),
             )
+
+    def test_run_steps_and_sort_excel_file_with_raise_ranking_file(self):
+        with Mocker(
+            real_http=False, case_sensitive=False, adapter=mock_jira_requests()
+        ):
+            run_steps_and_sort_excel_file(
+                HERE / "files/happy_path.xlsx",
+                HERE / "files/happy_path_sorted.xlsx",
+                excel_definition_file=str(
+                    HERE / "files/excel_definition_with_raise_ranking.json"
+                ),
+                sprint_schedule_file=str(SRC_ASSETS / "sprint_schedule.json"),
+            )
+
+            excel_definition = ExcelDefinition()
+            excel_definition.load_file(SRC_ASSETS / "excel_definition.json")
+            sprint_schedule = SprintScheduleStore()
+            sprint_schedule.load_file(SRC_ASSETS / "sprint_schedule.json")
+
+            _, stories = read_excel_file(
+                HERE / "files/happy_path_sorted.xlsx", excel_definition, sprint_schedule
+            )
+
+            false_value_begin = False
+            for story in stories:
+                if story["isThisAHardDate"] is True:
+                    continue
+                if story["isThisAHardDate"] is False and false_value_begin is False:
+                    false_value_begin = True
+                    continue
+                if story["isThisAHardDate"] is True and false_value_begin is True:
+                    raise AssertionError
+
+            remove(HERE / "files/happy_path_sorted.xlsx")

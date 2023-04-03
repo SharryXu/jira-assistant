@@ -1,9 +1,16 @@
+from decimal import Decimal
+
+from pytest import raises
+
 from jira_assistant.excel_definition import ExcelDefinitionColumn
 from jira_assistant.priority import Priority
 from jira_assistant.story import (
     Story,
     StoryFactory,
     compare_story_based_on_inline_weights,
+    convert_to_bool,
+    convert_to_datetime,
+    convert_to_decimal,
 )
 
 
@@ -190,3 +197,39 @@ class TestStory:
         s_9 = data[8]
         assert s_8["name"] < s_9["name"]
         assert s_8["productValue"] < s_9["productValue"]
+
+    def test_str(self):
+        data = mock_data()
+
+        assert "s1, N/A" in str(data[0])
+
+    def test_lt_le_gt_ge_eq(self):
+        data = mock_data()
+        s_1 = data[0]
+        s_2 = data[1]
+
+        with raises(TypeError):
+            assert s_1 < s_2
+        with raises(TypeError):
+            assert s_1 <= s_2
+        with raises(TypeError):
+            assert s_1 > s_2
+        with raises(TypeError):
+            assert s_1 >= s_2
+        with raises(TypeError):
+            assert s_1 == s_2
+
+    def test_convert_to_bool_using_correct_type(self):
+        assert convert_to_bool(True) is True
+
+    def test_convert_to_decimal(self):
+        assert Decimal.compare(
+            convert_to_decimal(Decimal(1.2)), Decimal(1.2)
+        ) == Decimal("0")
+        assert Decimal.compare(convert_to_decimal("1.2"), Decimal("1.2")) == Decimal(
+            "0"
+        )
+        assert Decimal.compare(convert_to_decimal("good"), Decimal(0)) == Decimal("0")
+
+    def test_convert_to_datetime(self):
+        assert convert_to_datetime(None) is None

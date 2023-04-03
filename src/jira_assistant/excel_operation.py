@@ -138,24 +138,22 @@ def _should_skip(row: tuple) -> bool:
 
 
 def output_to_csv_file(
-    file: str,
+    file: Union[str, Path],
     stories: "list[Story]",
     over_write: bool = True,
 ):
     if file is None or not pathlib.Path(file).is_absolute():
         raise ValueError("The file is invalid.")
 
-    if not pathlib.Path(file).exists():
+    if pathlib.Path(file).exists():
         if over_write is True:
             remove(file)
         else:
             raise ValueError(f"The csv file: {file} is already exist.")
 
-    with open(file, mode="w", encoding="utf-8") as csv_file:
-        separator = "-" * 300
+    with open(file, mode="x+", encoding="utf-8") as csv_file:
         for story in stories:
-            csv_file.write(f"{separator}\n")
-            csv_file.write(str(story))
+            csv_file.writelines([str(story)])
 
 
 def output_to_excel_file(
