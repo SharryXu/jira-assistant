@@ -118,7 +118,7 @@ Here's a simple program, just to give you an idea about how to use this package.
 
 If you want to customize the definition file to adapt the new Excel, you can do below steps.
 
-1. Creating the definition file like below. Inside the :code:`PreProcessSteps` list, you can determine the procedure which will be triggered before sorting and also inside the :code:`SortStrategyPriority` list, you can decide the sort algorithms' order.
+1. Creating the definition file like below. Inside the :code:`PreProcessSteps` list, you can determine the procedure which will be triggered before sorting and also inside the :code:`SortStrategyPriority` list, you can decide the sort algorithms' order. Note: We need to make sure there is one column named ``StoryId`` and only one.
 
 .. code-block:: json
 
@@ -196,10 +196,6 @@ If you want to customize the definition file to adapt the new Excel, you can do 
           ]
       }
   ]
-
-.. note::
-
-    We need to make sure there is one column named ``StoryId`` and only one.
 
 2. Indicating the definition file location to the :code:`run_steps_and_sort_excel_file` method like below.
 
