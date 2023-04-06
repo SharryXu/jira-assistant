@@ -196,7 +196,8 @@ If you want to customize the definition file to adapt the new Excel, you can do 
           ]
       }
   ]
-  
+
+.. note::
 
     We need to make sure there is one column named ``StoryId`` and only one.
 
