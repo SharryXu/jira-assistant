@@ -196,6 +196,8 @@ If you want to customize the definition file to adapt the new Excel, you can do 
           ]
       }
   ]
+  
+    We need to make sure there is one column named ``StoryId`` and only one.
 
 2. Indicating the definition file location to the :code:`run_steps_and_sort_excel_file` method like below.
 
