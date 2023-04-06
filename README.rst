@@ -1,7 +1,7 @@
 Jira Assistant - userful jira tools
 =============================================
 
-|pypi| |Download| |Linux| |Windows| |Mac OS| |Pylint| |CodeQL| |Documentation| |Codecov| |CodeClimate| |License|
+|pypi| |Download| |GithubIssues| |Linux| |Windows| |Mac OS| |Pylint| |CodeQL| |Documentation| |Codecov| |CodeClimate| |License|
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/jira-assistant.svg?style=flat-square
     :target https://pypi.org/project/jira-assistant/
@@ -10,6 +10,10 @@ Jira Assistant - userful jira tools
 .. |Download| image:: https://static.pepy.tech/personalized-badge/jira-assistant?period=month&units=international_system&left_color=black&right_color=blue&left_text=downloads/month
     :target: https://pepy.tech/project/jira-assistant
     :alt: download
+
+.. |GitHubIssues| image:: https://img.shields.io/github/issues/sharryxu/jira-assistant
+   :target: https://img.shields.io/github/issues/sharryxu/jira-assistant
+   :alt: GitHub issues
 
 .. |Linux| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-linux-test.yml/badge.svg
     :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-linux-test.yml
