@@ -51,6 +51,11 @@ Jira Assistant - userful jira tools
    :target: https://img.shields.io/github/license/sharryxu/jira-assistant
    :alt: License
 
+Collecting Ideas!!!
+===================
+
+If you have any ideas or good requirements related to this package, please let us know and we will do our best to fulfill! Please send emails to <sharry.xu@outlook.com>.
+
 Installation
 ============
 `jira-assistant` can be installed from PyPI using `pip` (note that the package name is different from the importable name)::
@@ -59,15 +64,13 @@ Installation
 
 Download
 ========
+
 jira-assistant is available on PyPI
 https://pypi.org/project/jira-assistant
 
-Collecting Ideas!!!
-===================
-If you have any ideas or good requirements related to this package, please let us know and we will do our best to fulfill! Please send emails to `sharry.xu@outlook.com`.
-
 Code
 ====
+
 The code and issue tracker are hosted on GitHub:
 https://github.com/SharryXu/jira-assistant
 
@@ -244,10 +247,12 @@ Meantime, you can follow the same way to customize the milestone priority file.
 
 Author
 ======
+
 The jira-assistant was written by Sharry Xu <sharry.xu@outlook.com> in 2022.
 
 Starting with version 0.1.5, the main function of this project has been totally finished.
 
 License
+
 =======
 All contributions after December 1, 2022 released under MIT license.
