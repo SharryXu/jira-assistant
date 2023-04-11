@@ -53,7 +53,6 @@ Jira Assistant - userful jira tools
 
 Collecting Ideas!!!
 ===================
-
 If you have any ideas or good requirements related to this package, please let us know and we will do our best to fulfill! Please send emails to <sharry.xu@outlook.com>.
 
 Installation
@@ -64,13 +63,11 @@ Installation
 
 Download
 ========
-
 jira-assistant is available on PyPI
 https://pypi.org/project/jira-assistant
 
 Code
 ====
-
 The code and issue tracker are hosted on GitHub:
 https://github.com/SharryXu/jira-assistant
 
@@ -84,7 +81,6 @@ Features
 
 A Simple Example
 ================
-
 You can run below command in the PowerShell (Windows OS) or Shell (UNIX OS) to process the excel files.
 
 .. code-block:: console
@@ -121,7 +117,6 @@ For more details, please check the help message like below:
 
 Code Example For Developer
 ==========================
-
 Here's a simple program, just to give you an idea about how to use this package.
 
 .. code-block:: python
@@ -247,12 +242,10 @@ Meantime, you can follow the same way to customize the milestone priority file.
 
 Author
 ======
-
 The jira-assistant was written by Sharry Xu <sharry.xu@outlook.com> in 2022.
 
 Starting with version 0.1.5, the main function of this project has been totally finished.
 
 License
-
 =======
 All contributions after December 1, 2022 released under MIT license.
