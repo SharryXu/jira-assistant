@@ -62,6 +62,10 @@ Download
 jira-assistant is available on PyPI
 https://pypi.org/project/jira-assistant
 
+Collecting Ideas!!!
+===================
+If you have any ideas or good requirements related to this package, please let us know and we will do our best to fulfill! Please send emails to `sharry.xu@outlook.com`.
+
 Code
 ====
 The code and issue tracker are hosted on GitHub:
@@ -242,11 +246,7 @@ Author
 ======
 The jira-assistant was written by Sharry Xu <sharry.xu@outlook.com> in 2022.
 
-Starting with version 0.1.13, the main function of this project has been totally finished.
-
-Contact
-=======
-Our mailing list is available at `sharry.xu@outlook.com`.
+Starting with version 0.1.5, the main function of this project has been totally finished.
 
 License
 =======
