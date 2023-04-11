@@ -1,7 +1,7 @@
 Jira Assistant - userful jira tools
 =============================================
 
-|pypi| |Download| |Linux| |Windows| |Mac OS| |Pylint| |CodeQL| |Documentation| |Codecov| |CodeClimate|
+|pypi| |Download| |GithubIssues| |Linux| |Windows| |Mac OS| |Pylint| |CodeQL| |Documentation| |Codecov| |CodeClimate| |License|
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/jira-assistant.svg?style=flat-square
     :target https://pypi.org/project/jira-assistant/
@@ -10,6 +10,10 @@ Jira Assistant - userful jira tools
 .. |Download| image:: https://static.pepy.tech/personalized-badge/jira-assistant?period=month&units=international_system&left_color=black&right_color=blue&left_text=downloads/month
     :target: https://pepy.tech/project/jira-assistant
     :alt: download
+
+.. |GitHubIssues| image:: https://img.shields.io/github/issues/sharryxu/jira-assistant
+   :target: https://img.shields.io/github/issues/sharryxu/jira-assistant
+   :alt: GitHub issues
 
 .. |Linux| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-linux-test.yml/badge.svg
     :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-linux-test.yml
@@ -43,6 +47,14 @@ Jira Assistant - userful jira tools
    :target: https://codeclimate.com/github/SharryXu/jira-assistant/maintainability
    :alt: Maintainability
 
+.. |License| image:: https://img.shields.io/github/license/sharryxu/jira-assistant
+   :target: https://img.shields.io/github/license/sharryxu/jira-assistant
+   :alt: License
+
+Collecting Ideas!!!
+===================
+If you have any ideas or good requirements related to this package, please let us know and we will do our best to fulfill! Please send emails to <sharry.xu@outlook.com>.
+
 Installation
 ============
 `jira-assistant` can be installed from PyPI using `pip` (note that the package name is different from the importable name)::
@@ -69,7 +81,6 @@ Features
 
 A Simple Example
 ================
-
 You can run below command in the PowerShell (Windows OS) or Shell (UNIX OS) to process the excel files.
 
 .. code-block:: console
@@ -106,7 +117,6 @@ For more details, please check the help message like below:
 
 Code Example For Developer
 ==========================
-
 Here's a simple program, just to give you an idea about how to use this package.
 
 .. code-block:: python
@@ -118,7 +128,7 @@ Here's a simple program, just to give you an idea about how to use this package.
 
 If you want to customize the definition file to adapt the new Excel, you can do below steps.
 
-1. Creating the definition file like below. Inside the :code:`PreProcessSteps` list, you can determine the procedure which will be triggered before sorting and also inside the :code:`SortStrategyPriority` list, you can decide the sort algorithms' order.
+1. Creating the definition file like below. Inside the :code:`PreProcessSteps` list, you can determine the procedure which will be triggered before sorting and also inside the :code:`SortStrategyPriority` list, you can decide the sort algorithms' order. Note: We need to make sure there is one column named ``StoryId`` and only one.
 
 .. code-block:: json
 
@@ -234,11 +244,7 @@ Author
 ======
 The jira-assistant was written by Sharry Xu <sharry.xu@outlook.com> in 2022.
 
-Starting with version 0.1.13, the main function of this project has been totally finished.
-
-Contact
-=======
-Our mailing list is available at `sharry.xu@outlook.com`.
+Starting with version 0.1.5, the main function of this project has been totally finished.
 
 License
 =======
