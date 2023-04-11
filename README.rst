@@ -51,6 +51,10 @@ Jira Assistant - userful jira tools
    :target: https://img.shields.io/github/license/sharryxu/jira-assistant
    :alt: License
 
+Collecting Ideas!!!
+===================
+If you have any ideas or good requirements related to this package, please let us know and we will do our best to fulfill! Please send emails to <sharry.xu@outlook.com>.
+
 Installation
 ============
 `jira-assistant` can be installed from PyPI using `pip` (note that the package name is different from the importable name)::
@@ -77,7 +81,6 @@ Features
 
 A Simple Example
 ================
-
 You can run below command in the PowerShell (Windows OS) or Shell (UNIX OS) to process the excel files.
 
 .. code-block:: console
@@ -114,7 +117,6 @@ For more details, please check the help message like below:
 
 Code Example For Developer
 ==========================
-
 Here's a simple program, just to give you an idea about how to use this package.
 
 .. code-block:: python
@@ -242,11 +244,7 @@ Author
 ======
 The jira-assistant was written by Sharry Xu <sharry.xu@outlook.com> in 2022.
 
-Starting with version 0.1.13, the main function of this project has been totally finished.
-
-Contact
-=======
-Our mailing list is available at `sharry.xu@outlook.com`.
+Starting with version 0.1.5, the main function of this project has been totally finished.
 
 License
 =======
