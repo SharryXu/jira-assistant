@@ -42,7 +42,6 @@ dev = ["pip-tools", "pytest", "pylint"]
 
 [project.urls]
 Documentation = "https://jira-assistant.readthedocs.io/en/stable"
-Email = "mailto:sharry.xu@outlook.com"
 Source = "https://github.com/SharryXu/jira-assistant"
 Tracker = "https://github.com/SharryXu/jira-assistant/issues"
 
