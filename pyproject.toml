@@ -4,17 +4,28 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jira-assistant"
-version = "0.1.7"
+authors = [{ name = "Sharry Xu", email = "sharry.xu@outlook.com" }]
 description = "Useful Jira tools"
 readme = "README.rst"
-authors = [{ name = "Sharry Xu", email = "sharry.xu@outlook.com" }]
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Development Status :: 6 - Mature",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Project Management :: Jira",
+    "Topic :: Utilities",
 ]
-keywords = ["jira", "excel", "jira-cloud"]
+keywords = ["jira", "excel", "sorting", "project management", "tool"]
 dependencies = [
     "openpyxl >= 3.0.10",
     "python-dateutil >= 2.8.2",
@@ -24,13 +35,16 @@ dependencies = [
     'tomli; python_version < "3.11"',
     'requests-mock >= 1.10.0'
 ]
-requires-python = ">=3.10"
+version = "0.1.8"
 
 [project.optional-dependencies]
 dev = ["pip-tools", "pytest", "pylint"]
 
 [project.urls]
-Homepage = "https://github.com/SharryXu/jira-assistant"
+Documentation = "https://jira-assistant.readthedocs.io/en/stable"
+Email = "mailto:sharry.xu@outlook.com"
+Source = "https://github.com/SharryXu/jira-assistant"
+Tracker = "https://github.com/SharryXu/jira-assistant/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
