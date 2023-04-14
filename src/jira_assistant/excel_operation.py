@@ -208,7 +208,6 @@ def output_to_excel_file(
 
     sheet: Worksheet = work_book.active
 
-    # TODO: Refactor this method to return needed properties list.
     excel_definition_columns = excel_definition.get_columns()
 
     # Use original excel column name first.
@@ -238,16 +237,10 @@ def output_to_excel_file(
 def _query_jira_information(
     stories: list[Story], excel_definition: ExcelDefinition
 ) -> bool:
-
     load_dotenv(ASSETS / ".env")
 
     jira_url: str | None = environ.get("JIRA_URL", default=None)
-    if (
-        # TODO: Avoid duplicate logic.
-        jira_url is None
-        or jira_url.isspace()
-        or len(jira_url) == 0
-    ):
+    if jira_url is None or jira_url.isspace() or len(jira_url) == 0:
         print(
             "The jira url is invalid. Please use the update-jira-info command to add/update url."
         )
@@ -315,7 +308,7 @@ def _query_jira_information(
                 )
             else:
                 print(f"Cannot find related information for story: {story_id}")
-                story.need_sort = False  # TODO: Avoid NoneType compare issue.
+                story.need_sort = False
                 continue
 
     return True

@@ -79,6 +79,11 @@ Features
 * Generating the target excel file which contains the result.
 * The excel file structure can be customized by JSON file.
 
+Documentation
+=============
+
+For full documentation, including installation, tutorials and PDF documents, please see https://jira-assistant.readthedocs.io/en/stable/
+
 A Simple Example
 ================
 You can run below command in the PowerShell (Windows OS) or Shell (UNIX OS) to process the excel files.

@@ -15,7 +15,7 @@ __all__ = ["Milestone"]
 
 
 class Milestone:
-    # TODO: __init__ method cannot have classmethod attribute! Otherwise, all instance will point to the same one.
+    # __init__ method cannot have classmethod attribute! Otherwise, all instance will point to the same one.
     def __init__(self, raw: Any) -> None:
         self.raw: str = raw
         self.sprint = self.raw
