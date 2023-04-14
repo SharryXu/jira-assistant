@@ -18,6 +18,8 @@ mkdocs:
   configuration: mkdocs.yml
   fail_on_warning: false
 
+# Currently, only Sphinx supports additional formats.
+# https://docs.readthedocs.io/en/latest/config-file/v2.html#formats
 formats:
   - pdf
   - epub
