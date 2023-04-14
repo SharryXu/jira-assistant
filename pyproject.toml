@@ -17,13 +17,17 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Development Status :: 6 - Mature",
     "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: End Users/Desktop",
     "License :: OSI Approved :: MIT License",
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: Microsoft :: Windows",
-    "Operating System :: POSIX",
+    "Operating System :: POSIX :: Linux",
     "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Project Management :: Jira",
     "Topic :: Utilities",
+    "Natural Language :: English"
 ]
 keywords = ["jira", "excel", "sorting", "project management", "tool"]
 dependencies = [
