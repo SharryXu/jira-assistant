@@ -36,7 +36,7 @@ Homepage = "https://github.com/SharryXu/jira-assistant"
 where = ["src"]
 
 [tool.setuptools.package-data]
-"jira_assistant.assets" = ["*.json", "*.conf"]
+"jira_assistant.assets" = ["*.json"]
 
 [project.scripts]
 process-excel-file = "jira_assistant:process_excel_file"

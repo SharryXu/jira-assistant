@@ -97,7 +97,6 @@ class Story:
             if property_value:
                 return "Yes"
             return "No"
-        # TODO: Support customized format string in JSON.
         if isinstance(property_value, float):
             return str(property_value)
         return str(property_value)
