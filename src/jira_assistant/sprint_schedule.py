@@ -25,7 +25,7 @@ class SprintScheduleStore:
             raw_data = loads(content)
         except JSONDecodeError as e:
             raise SyntaxError(
-                f"The structure of excel definition file is wrong. Hint: {e.msg} in line {e.lineno}:{e.colno}."
+                f"The structure of sprint schedule file is wrong. Hint: {e.msg} in line {e.lineno}:{e.colno}."
             ) from e
 
         priority = 0

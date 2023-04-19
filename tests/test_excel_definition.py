@@ -1,10 +1,12 @@
 import pathlib
-from sys import exc_info
+from importlib.util import find_spec
 
-from exceptiongroup import ExceptionGroup
 from pytest import raises
 
 from jira_assistant.excel_definition import ExcelDefinition
+
+if not find_spec("ExceptionGroup"):
+    from exceptiongroup import ExceptionGroup
 
 HERE = pathlib.Path(__file__).resolve().parent
 SRC_ASSETS = HERE.parent / "src/jira_assistant/assets"

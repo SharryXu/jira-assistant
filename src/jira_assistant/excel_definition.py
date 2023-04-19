@@ -6,16 +6,18 @@ import pathlib
 import re
 from copy import deepcopy
 from datetime import datetime
+from importlib.util import find_spec
 from json import loads
 from json.decoder import JSONDecodeError
 from pathlib import Path
 from types import NoneType
 from typing import Any, Optional, TypedDict, Union
 
-from exceptiongroup import ExceptionGroup
-
 from .milestone import Milestone
 from .priority import Priority
+
+if not find_spec("ExceptionGroup"):
+    from exceptiongroup import ExceptionGroup
 
 __all__ = ["ExcelDefinition"]
 
