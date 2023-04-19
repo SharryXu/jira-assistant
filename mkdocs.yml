@@ -5,7 +5,11 @@ site_author: Sharry Xu
 repo_url: https://github.com/SharryXu/jira-assistant
 nav:
     - Home: index.md
-    - About: about.md
+    - 'Use Cases':
+        - 'Gathering information from Jira': 'gathering-information-from-jira.md'
+    - About:
+        - 'Read Me': about.md
+        - License: license.md
 theme:
     name: readthedocs
     highlightjs: true
@@ -15,3 +19,7 @@ theme:
 plugins:
     - search:
         min_search_length: 3
+markdown_extensions:
+    - toc:
+        permalink: "#"
+        baselevel: 1
