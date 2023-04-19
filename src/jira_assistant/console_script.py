@@ -25,6 +25,7 @@ def get_args_for_process_excel_file() -> Namespace:
     parser = ArgumentParser(
         description="Jira tool: Used to pre-process and sort stories",
         formatter_class=ArgumentDefaultsHelpFormatter,
+        allow_abbrev=False,
     )
 
     parser.add_argument(
