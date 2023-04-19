@@ -27,6 +27,21 @@ class TestConsoleScript:
 
         remove(HERE / "files/happy_path_sorted.xlsx")
 
+    def test_process_excel_file_using_invalid_definition_file(self):
+        with pytest.raises(CalledProcessError):
+            result = run(
+                [
+                    "process-excel-file",
+                    HERE / "files/happy_path.xlsx",
+                    "--excel_definition_file",
+                    HERE / "files/excel_definition_invalid_structure.txt",
+                ],
+                capture_output=True,
+                check=True,
+            )
+
+            assert "xlsx has been saved" in result.stdout.decode("utf-8")
+
     def test_generate_template_excel_definition(self):
         result = run(
             ["generate-template", "excel-definition"], capture_output=True, check=True

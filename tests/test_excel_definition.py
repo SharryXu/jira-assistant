@@ -1,5 +1,7 @@
 import pathlib
+from sys import exc_info
 
+from exceptiongroup import ExceptionGroup
 from pytest import raises
 
 from jira_assistant.excel_definition import ExcelDefinition
@@ -92,8 +94,18 @@ class TestExcelDefinition:
     def test_validate_invalid_name(self):
         excel_definition_filename = TEST_ASSETS / "excel_definition_invalid_name.json"
         store = ExcelDefinition()
-        with raises(TypeError):
+        with raises(ExceptionGroup) as err:
             store.load_file(excel_definition_filename)
+
+        assert (
+            "The excel definition file has below issues need to be fixed"
+            in err.value.message
+        )
+        assert len(err.value.exceptions) == 1
+        assert (
+            err.value.exceptions[0].args[0]
+            == "The Name property type in the column definition should be string."
+        )
 
     def test_validate_invalid_raise_ranking(self):
         excel_definition_filename = (
@@ -129,8 +141,18 @@ class TestExcelDefinition:
     def test_validate_invalid_index(self):
         excel_definition_filename = TEST_ASSETS / "excel_definition_invalid_index.json"
         store = ExcelDefinition()
-        with raises(TypeError):
+        with raises(ExceptionGroup) as err:
             store.load_file(excel_definition_filename)
+
+        assert (
+            "The excel definition file has below issues need to be fixed"
+            in err.value.message
+        )
+        assert len(err.value.exceptions) == 1
+        assert (
+            err.value.exceptions[0].args[0]
+            == "The Index property type in the column definition is not integer."
+        )
 
     def test_validate_index_not_continuation(self):
         excel_definition_filename = (
@@ -164,3 +186,35 @@ class TestExcelDefinition:
         validation_result = store.validate()
 
         assert len(validation_result) == 1
+
+    def test_validate_invalid_structure(self):
+        excel_definition_filename = (
+            TEST_ASSETS / "excel_definition_invalid_structure.txt"
+        )
+        store = ExcelDefinition()
+
+        with raises(Exception) as err:
+            store.load_file(excel_definition_filename)
+
+        assert (
+            "The structure of excel definition file is wrong. Hint: Expecting ',' delimiter in line 49:1"
+            in err.value.args[0]
+        )
+
+    def test_validate_invalid_pre_process_step_name(self):
+        excel_definition_filename = (
+            TEST_ASSETS / "excel_definition_invalid_pre_process_step_name.json"
+        )
+        store = ExcelDefinition()
+
+        with raises(ExceptionGroup) as err:
+            store.load_file(excel_definition_filename)
+
+        assert (
+            "The excel definition file has below issues need to be fixed"
+            in err.value.message
+        )
+        assert len(err.value.exceptions) == 1
+        assert (
+            err.value.exceptions[0].args[0] == "The pre-process step must have a name."
+        )

@@ -14,6 +14,7 @@ from typing import Optional
 from urllib.parse import ParseResult, urlparse
 
 from dotenv import set_key
+from exceptiongroup import ExceptionGroup
 
 from .excel_definition import ExcelDefinition
 from .excel_operation import output_to_excel_file, run_steps_and_sort_excel_file
@@ -162,6 +163,10 @@ def process_excel_file() -> None:
         )
 
         sys.exit(0)
+    except ExceptionGroup as e:
+        print(e.message)
+        for index, exp in enumerate(e.exceptions):
+            print(f"{index + 1}. {exp}")
     except Exception as e:
         print(e)
         sys.exit(1)

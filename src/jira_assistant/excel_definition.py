@@ -2,14 +2,17 @@
 """
 This module is used to store excel column definition information.
 """
-import json
 import pathlib
 import re
 from copy import deepcopy
 from datetime import datetime
+from json import loads
+from json.decoder import JSONDecodeError
 from pathlib import Path
 from types import NoneType
 from typing import Any, Optional, TypedDict, Union
+
+from exceptiongroup import ExceptionGroup
 
 from .milestone import Milestone
 from .priority import Priority
@@ -227,34 +230,48 @@ class ExcelDefinition:
             raise ValueError("There is no content in the excel definition file.")
 
         try:
-            raw_data = json.loads(content)
+            raw_data = loads(content)
+        except JSONDecodeError as e:
+            raise SyntaxError(
+                f"The structure of excel definition file is wrong. Hint: {e.msg} in line {e.lineno}:{e.colno}."
+            ) from e
 
-            if len(raw_data) > 0:
-                if raw_data[0].get("PreProcessSteps", None) is not None:
-                    for item in raw_data[0]["PreProcessSteps"]:
+        parse_errors = []
+
+        if len(raw_data) > 0:
+            if raw_data[0].get("PreProcessSteps", None) is not None:
+                for item in raw_data[0]["PreProcessSteps"]:
+                    try:
                         self.pre_process_steps.append(
                             parse_json_item_to_pre_process_step(item)
                         )
+                    except (TypeError, ValueError) as e:
+                        parse_errors.append(e.args[0])
 
-                if raw_data[0].get("SortStrategies", None) is not None:
-                    for item in raw_data[0]["SortStrategies"]:
+            if raw_data[0].get("SortStrategies", None) is not None:
+                for item in raw_data[0]["SortStrategies"]:
+                    try:
                         self.sort_strategies.append(
                             parse_json_item_to_sort_strategy(item)
                         )
+                    except (TypeError, ValueError) as e:
+                        parse_errors.append(e.args[0])
 
-            if len(raw_data) >= 1:
-                for item in raw_data[1]["Columns"]:
+        if len(raw_data) >= 1:
+            for item in raw_data[1]["Columns"]:
+                try:
                     self.columns.append(
                         parse_json_item_to_excel_definition_column(item)
                     )
-        except TypeError:
-            raise
-        except ValueError:
-            raise
-        except Exception as e:
-            raise ValueError(
-                "The JSON structure of the excel definition file is wrong. Please check the documentation: https://github.com/SharryXu/jira-assistant"
-            ) from e
+                except (TypeError, ValueError) as e:
+                    parse_errors.append(e.args[0])
+
+        if parse_errors:
+            raise ExceptionGroup(
+                "The excel definition file has below issues need to be fixed:",
+                # Avoid duplicate error messages.
+                [SyntaxError(err) for err in set(parse_errors)],
+            )
 
         return self
 

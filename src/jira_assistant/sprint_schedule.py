@@ -1,5 +1,6 @@
-import json
 import pathlib
+from json import loads
+from json.decoder import JSONDecodeError
 from pathlib import Path
 from typing import Union
 
@@ -21,27 +22,32 @@ class SprintScheduleStore:
             return
 
         try:
-            raw_data = json.loads(content)
-
-            priority = 0
-            sprints = []
-            for item in raw_data:
-                for key, value in item.items():
-                    if key.lower() in "priority":
-                        priority = value
-                    if key.lower() in "sprints":
-                        for sprint in value:
-                            if len(sprint) > 0:
-                                sprints.append(sprint)
-
-                for sprint in sprints:
-                    self.store.append((sprint, priority))
-                sprints.clear()
-                priority = 0
-        except Exception as e:
-            raise ValueError(
-                "The JSON structure of the sprint schedule file is wrong. Please check the documentation: https://github.com/SharryXu/jira-assistant"
+            raw_data = loads(content)
+        except JSONDecodeError as e:
+            raise SyntaxError(
+                f"The structure of excel definition file is wrong. Hint: {e.msg} in line {e.lineno}:{e.colno}."
             ) from e
+
+        priority = 0
+        sprints = []
+        for item in raw_data:
+            for key, value in item.items():
+                if key.lower() in "priority":
+                    if value is None or not isinstance(value, int):
+                        # Just skip invalid items.
+                        continue
+                    priority = value
+                if key.lower() in "sprints":
+                    if value is None or not isinstance(value, list):
+                        continue
+                    for sprint in value:
+                        if len(sprint) > 0:
+                            sprints.append(sprint)
+
+            for sprint in sprints:
+                self.store.append((sprint, priority))
+            sprints.clear()
+            priority = 0
 
     def load_file(self, file: Union[str, Path]):
         """
