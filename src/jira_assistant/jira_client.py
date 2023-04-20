@@ -33,7 +33,7 @@ class JiraClient:
 
     def get_stories_detail(
         self, story_ids: List[str], jira_fields: List[Dict[str, str]]
-    ) -> "dict[str, dict[str, str]]":
+    ) -> "Dict[str, Dict[str, str]]":
         final_result = {}
         batch_size = 200
 
@@ -62,8 +62,8 @@ class JiraClient:
             return {}
 
     def _internal_get_stories_detail(
-        self, story_ids: list[str], jira_fields: list[dict[str, str]]
-    ) -> "dict[str, dict[str, str]]":
+        self, story_ids: List[str], jira_fields: List[Dict[str, str]]
+    ) -> "Dict[str, Dict[str, str]]":
         id_query = ",".join([f"'{str(story_id)}'" for story_id in story_ids])
 
         try:
