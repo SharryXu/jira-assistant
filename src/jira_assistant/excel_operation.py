@@ -12,7 +12,7 @@ except ImportError:
 
 from os import environ, remove
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Tuple, Union
 
 import openpyxl
 from dotenv import load_dotenv
@@ -52,7 +52,7 @@ def read_excel_file(
     file: Union[str, Path],
     excel_definition: ExcelDefinition,
     sprint_schedule: SprintScheduleStore,
-) -> tuple[list[str], list[Story]]:
+) -> Tuple[List[str], List[Story]]:
     """
     Read and parse the excel file
 
@@ -144,7 +144,7 @@ def _should_skip(row: tuple) -> bool:
 
 def output_to_csv_file(
     file: Union[str, Path],
-    stories: "list[Story]",
+    stories: "List[Story]",
     over_write: bool = True,
 ):
     if file is None or not pathlib.Path(file).is_absolute():
@@ -163,9 +163,9 @@ def output_to_csv_file(
 
 def output_to_excel_file(
     file: Union[str, Path],
-    stories: "list[Story]",
+    stories: "List[Story]",
     excel_definition: ExcelDefinition,
-    columns_in_excel: Optional[list[str]] = None,
+    columns_in_excel: Optional[List[str]] = None,
     over_write: bool = True,
 ):
     """
@@ -240,7 +240,7 @@ def output_to_excel_file(
 
 
 def _query_jira_information(
-    stories: list[Story], excel_definition: ExcelDefinition
+    stories: List[Story], excel_definition: ExcelDefinition
 ) -> bool:
     load_dotenv(ASSETS / ".env")
 
