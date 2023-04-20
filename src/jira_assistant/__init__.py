@@ -2,8 +2,10 @@
 """
 This module is used to list all exported classes/methods.
 """
-from importlib import metadata
-from importlib.metadata import version
+try:
+    from importlib import metadata
+except ImportError:
+    import importlib_metadata as metadata
 
 from .console_script import generate_template, process_excel_file, update_jira_info
 from .excel_definition import ExcelDefinition, ExcelDefinitionColumn
@@ -18,7 +20,7 @@ from .priority import Priority
 from .sprint_schedule import SprintScheduleStore
 from .story import Story, StoryFactory
 
-__version__ = version("jira_assistant")
+__version__ = metadata.version("jira_assistant")
 
 __all__ = [
     "ExcelDefinition",
@@ -36,5 +38,3 @@ __all__ = [
     "generate_template",
     "update_jira_info",
 ]
-
-del metadata

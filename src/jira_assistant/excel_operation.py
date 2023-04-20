@@ -4,7 +4,12 @@ This module offers a set of operations that user can modify their excel files.
 """
 import pathlib
 import warnings
-from importlib.resources import files
+
+try:
+    from importlib.resources import files
+except ImportError:
+    from importlib_resources import files
+
 from os import environ, remove
 from pathlib import Path
 from typing import Optional, Union

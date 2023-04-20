@@ -1,6 +1,7 @@
 import pathlib
 from json import load
 from re import IGNORECASE, search
+from typing import Dict
 
 from requests import Response
 from requests_mock import Adapter
@@ -10,7 +11,7 @@ from requests_mock.response import create_response
 HERE = pathlib.Path(__file__).resolve().parent
 TEST_ASSETS = HERE / "files"
 
-mock_jira_stories: dict[str, dict[str, str]] = {}
+mock_jira_stories: Dict[str, Dict[str, str]] = {}
 with open(TEST_ASSETS / "mock_jira_stories.json", encoding="utf-8") as file:
     mock_jira_stories = load(file)
 
