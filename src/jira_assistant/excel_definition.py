@@ -2,6 +2,8 @@
 """
 This module is used to store excel column definition information.
 """
+from __future__ import annotations
+
 import pathlib
 import re
 from copy import deepcopy
