@@ -11,7 +11,7 @@ from datetime import datetime
 from json import loads
 from json.decoder import JSONDecodeError
 from pathlib import Path
-from typing import Any, Optional, TypedDict, Union
+from typing import Any, List, Optional, Set, TypedDict, Union
 
 from .milestone import Milestone
 from .priority import Priority
@@ -279,7 +279,7 @@ class ExcelDefinition:
     @staticmethod
     def parse_raise_ranking_level_scope_index_expression(
         expression: Union[Any, None],
-    ) -> Optional[set[int]]:
+    ) -> Optional[Set[int]]:
         if expression is None or not isinstance(expression, str):
             return None
         if len(expression) == 0 or expression.isspace():
@@ -321,14 +321,14 @@ class ExcelDefinition:
 
         return self
 
-    def validate(self) -> "list":
+    def validate(self) -> "List":
         return (
             self._validate_pre_process_steps()
             + self._validate_sort_strategies()
             + self._validate_column_definitions()
         )
 
-    def _validate_pre_process_steps(self) -> "list[str]":
+    def _validate_pre_process_steps(self) -> "List[str]":
         invalid_definitions = []
 
         # Validate PreProcessSteps
@@ -357,7 +357,7 @@ class ExcelDefinition:
 
         return invalid_definitions
 
-    def _validate_sort_strategies(self) -> "list[str]":
+    def _validate_sort_strategies(self) -> "List[str]":
         invalid_definitions = []
 
         # Validate Strategies
@@ -403,7 +403,7 @@ class ExcelDefinition:
 
         return invalid_definitions
 
-    def _validate_column_definitions(self) -> "list[str]":
+    def _validate_column_definitions(self) -> "List[str]":
         invalid_definitions = []
 
         # Validate the Columns
@@ -413,7 +413,7 @@ class ExcelDefinition:
         for column in self.get_columns():
             column_index: int = column["index"]
             column_name: str = column["name"]
-            column_type: type | None = column["type"]
+            column_type: Optional[type] = column["type"]
             column_require_sort: bool = column["require_sort"]
             column_sort_order: bool = column["sort_order"]
             column_scope_require_sort: bool = column["scope_require_sort"]
@@ -421,7 +421,7 @@ class ExcelDefinition:
             column_inline_weights: int = column["inline_weights"]
             column_raise_ranking: int = column["raise_ranking"]
             column_scope_raise_ranking: int = column["scope_raise_ranking"]
-            column_jira_field_mapping: dict | None = column["jira_field_mapping"]
+            column_jira_field_mapping: Optional[dict] = column["jira_field_mapping"]
 
             # Check Name cannot be empty
             if len(column_name) == 0:
@@ -579,17 +579,17 @@ class ExcelDefinition:
         for item in self.columns:
             yield item
 
-    def get_columns(self) -> "list[ExcelDefinitionColumn]":
+    def get_columns(self) -> "List[ExcelDefinitionColumn]":
         return deepcopy(self.columns)
 
-    def get_columns_name(self) -> "list[str | None]":
+    def get_columns_name(self) -> "List[Optional[str]]":
         return [item["name"] for item in self.columns]
 
     @property
     def max_column_index(self) -> int:
         return self.columns[len(self.columns) - 1]["index"]
 
-    def get_sort_strategies(self, enabled: bool = True) -> "list[SortStrategy]":
+    def get_sort_strategies(self, enabled: bool = True) -> "List[SortStrategy]":
         result: list[SortStrategy] = []
         for sort_strategy in self.sort_strategies:
             if sort_strategy["enabled"] == enabled:
@@ -597,7 +597,7 @@ class ExcelDefinition:
         result.sort(key=_sort_priority_map, reverse=False)
         return result
 
-    def get_pre_process_steps(self, enabled: bool = True) -> "list[PreProcessStep]":
+    def get_pre_process_steps(self, enabled: bool = True) -> "List[PreProcessStep]":
         result: list[PreProcessStep] = []
         for pre_process_step in self.pre_process_steps:
             if pre_process_step["enabled"] == enabled:

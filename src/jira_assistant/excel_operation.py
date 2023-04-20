@@ -226,7 +226,7 @@ def output_to_excel_file(
         if hasattr(cell, "value"):
             setattr(cell, "value", column)
 
-    if stories is not None:
+    if stories is not None and stories:
         for row_index, story in enumerate(stories):
             for column in excel_definition_columns:
                 if column["name"] is None:
@@ -244,14 +244,14 @@ def _query_jira_information(
 ) -> bool:
     load_dotenv(ASSETS / ".env")
 
-    jira_url: str | None = environ.get("JIRA_URL", default=None)
+    jira_url: Optional[str] = environ.get("JIRA_URL", default=None)
     if jira_url is None or jira_url.isspace() or len(jira_url) == 0:
         print(
             "The jira url is invalid. Please use the update-jira-info command to add/update url."
         )
         return False
 
-    jira_acccess_token: str | None = environ.get("JIRA_ACCESS_TOKEN", default=None)
+    jira_acccess_token: Optional[str] = environ.get("JIRA_ACCESS_TOKEN", default=None)
     if (
         jira_acccess_token is None
         or jira_acccess_token.isspace()

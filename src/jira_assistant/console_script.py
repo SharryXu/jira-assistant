@@ -199,7 +199,7 @@ def generate_template():
 
         template_type: str = str(args.template_type).lower()
 
-        result: Path | None = None
+        result: Optional[Path] = None
         if template_type == "excel":
             result = _generate_excel_template(
                 _generate_timestamp_filename("excel-template", ".xlsx")
@@ -242,6 +242,8 @@ def _generate_excel_template(output_file: "Path") -> Optional[Path]:
         excel_definition = ExcelDefinition().load(
             files("jira_assistant.assets").joinpath("excel_definition.json").read_text()
         )
+        print("Test")
+        print(output_file.absolute())
         output_to_excel_file(output_file, [], excel_definition)
         return output_file
     except Exception as e:
