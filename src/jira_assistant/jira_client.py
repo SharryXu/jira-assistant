@@ -43,8 +43,10 @@ class JiraClient:
                 end_index = batch_size
                 while end_index <= len(story_ids) and start_index < len(story_ids):
                     # print(f"Start: {start_index}, End: {end_index}")
-                    final_result = final_result | self._internal_get_stories_detail(
-                        story_ids[start_index:end_index], jira_fields
+                    final_result.update(
+                        self._internal_get_stories_detail(
+                            story_ids[start_index:end_index], jira_fields
+                        )
                     )
                     start_index = end_index
                     if start_index + batch_size < len(story_ids):
