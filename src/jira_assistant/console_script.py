@@ -247,7 +247,7 @@ def _generate_excel_template(output_file: "Path") -> Optional[Path]:
     except Exception as e:
         import traceback
 
-        traceback.print_exception(e)
+        print(traceback.format_exc())
         print(e)
         return None
 
