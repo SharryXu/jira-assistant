@@ -19,16 +19,16 @@ Jira Assistant - userful jira tools
    :target: https://img.shields.io/github/issues/sharryxu/jira-assistant
    :alt: GitHub issues
 
-.. |Linux| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-linux-test.yml/badge.svg
-    :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-linux-test.yml
+.. |Linux| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-linux-test.yml/badge.svg
+    :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-linux-test.yml
     :alt: python 3.11 (Linux)
 
-.. |Mac OS| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-macos-test.yml/badge.svg
-    :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-macos-test.yml
+.. |Mac OS| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-macos-test.yml/badge.svg
+    :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-macos-test.yml
     :alt: python 3.11 (Mac OS)
 
-.. |Windows| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-windows-test.yml/badge.svg
-    :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-11-windows-test.yml
+.. |Windows| image:: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-windows-test.yml/badge.svg
+    :target: https://github.com/SharryXu/jira-assistant/actions/workflows/python-3-windows-test.yml
     :alt: python 3.11 (Windows)
 
 .. |Pylint| image:: https://github.com/sharryxu/jira-assistant/actions/workflows/pylint.yml/badge.svg
