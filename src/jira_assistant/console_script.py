@@ -7,7 +7,6 @@ import pathlib
 import sys
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from datetime import datetime
-from importlib.resources import files
 from pathlib import Path
 from shutil import copyfile
 from typing import Optional
@@ -25,6 +24,7 @@ def get_args_for_process_excel_file() -> Namespace:
     parser = ArgumentParser(
         description="Jira tool: Used to pre-process and sort stories",
         formatter_class=ArgumentDefaultsHelpFormatter,
+        allow_abbrev=False,
     )
 
     parser.add_argument(
@@ -193,7 +193,7 @@ def generate_template():
 
         template_type: str = str(args.template_type).lower()
 
-        result: Path | None = None
+        result: Optional[Path] = None
         if template_type == "excel":
             result = _generate_excel_template(
                 _generate_timestamp_filename("excel-template", ".xlsx")
@@ -233,8 +233,8 @@ def _generate_timestamp_filename(prefix: str, extension: str) -> "Path":
 
 def _generate_excel_template(output_file: "Path") -> Optional[Path]:
     try:
-        excel_definition = ExcelDefinition().load(
-            files("jira_assistant.assets").joinpath("excel_definition.json").read_text()
+        excel_definition = ExcelDefinition().load_file(
+            SRC_ASSETS / "excel_definition.json"
         )
         output_to_excel_file(output_file, [], excel_definition)
         return output_file

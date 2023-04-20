@@ -1,5 +1,7 @@
 # jira-assistant: helps you deal with Jira more efficient
 
+[TOC]
+
 The `jira-assistant` package is a collection of tools which can make easier for you to retrieve information from the Jira platform and doing further processing.
 
 `jira-assistant` requires: Python 3.10+

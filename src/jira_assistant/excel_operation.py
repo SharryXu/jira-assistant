@@ -4,10 +4,15 @@ This module offers a set of operations that user can modify their excel files.
 """
 import pathlib
 import warnings
-from importlib.resources import files
+
+try:
+    from importlib.resources import files
+except ImportError:
+    from importlib_resources import files
+
 from os import environ, remove
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Tuple, Union
 
 import openpyxl
 from dotenv import load_dotenv
@@ -47,7 +52,7 @@ def read_excel_file(
     file: Union[str, Path],
     excel_definition: ExcelDefinition,
     sprint_schedule: SprintScheduleStore,
-) -> tuple[list[str], list[Story]]:
+) -> Tuple[List[str], List[Story]]:
     """
     Read and parse the excel file
 
@@ -95,7 +100,7 @@ def read_excel_file(
             work_book.close()
             return ([], [])
 
-        columns: list[str] = []
+        columns: List[str] = []
 
         for column_index in range(1, column_count + 1):
             columns.append(str(sheet.cell(row=1, column=column_index).value))
@@ -139,7 +144,7 @@ def _should_skip(row: tuple) -> bool:
 
 def output_to_csv_file(
     file: Union[str, Path],
-    stories: "list[Story]",
+    stories: "List[Story]",
     over_write: bool = True,
 ):
     if file is None or not pathlib.Path(file).is_absolute():
@@ -158,9 +163,9 @@ def output_to_csv_file(
 
 def output_to_excel_file(
     file: Union[str, Path],
-    stories: "list[Story]",
+    stories: "List[Story]",
     excel_definition: ExcelDefinition,
-    columns_in_excel: Optional[list[str]] = None,
+    columns_in_excel: Optional[List[str]] = None,
     over_write: bool = True,
 ):
     """
@@ -221,7 +226,7 @@ def output_to_excel_file(
         if hasattr(cell, "value"):
             setattr(cell, "value", column)
 
-    if stories is not None:
+    if stories is not None and stories:
         for row_index, story in enumerate(stories):
             for column in excel_definition_columns:
                 if column["name"] is None:
@@ -235,18 +240,18 @@ def output_to_excel_file(
 
 
 def _query_jira_information(
-    stories: list[Story], excel_definition: ExcelDefinition
+    stories: List[Story], excel_definition: ExcelDefinition
 ) -> bool:
     load_dotenv(ASSETS / ".env")
 
-    jira_url: str | None = environ.get("JIRA_URL", default=None)
+    jira_url: Optional[str] = environ.get("JIRA_URL", default=None)
     if jira_url is None or jira_url.isspace() or len(jira_url) == 0:
         print(
             "The jira url is invalid. Please use the update-jira-info command to add/update url."
         )
         return False
 
-    jira_acccess_token: str | None = environ.get("JIRA_ACCESS_TOKEN", default=None)
+    jira_acccess_token: Optional[str] = environ.get("JIRA_ACCESS_TOKEN", default=None)
     if (
         jira_acccess_token is None
         or jira_acccess_token.isspace()
@@ -342,7 +347,9 @@ def run_steps_and_sort_excel_file(
     sprint_schedule = SprintScheduleStore()
     if sprint_schedule_file is None:
         sprint_schedule.load(
-            files("jira_assistant.assets").joinpath("sprint_schedule.json").read_text()
+            files("jira_assistant.assets")
+            .joinpath("sprint_schedule.json")
+            .read_text(encoding="utf-8")
         )
         print("Using default sprint schedule...")
     else:
@@ -352,7 +359,9 @@ def run_steps_and_sort_excel_file(
     excel_definition = ExcelDefinition()
     if excel_definition_file is None:
         excel_definition.load(
-            files("jira_assistant.assets").joinpath("excel_definition.json").read_text()
+            files("jira_assistant.assets")
+            .joinpath("excel_definition.json")
+            .read_text(encoding="utf-8")
         )
         print("Using default excel definition...")
     else:
@@ -390,7 +399,7 @@ def run_steps_and_sort_excel_file(
                     break
 
             if need_call_jira_api:
-                stories_need_call_jira: list[Story] = []
+                stories_need_call_jira: List[Story] = []
                 for story in stories:
                     if story.need_sort:
                         stories_need_call_jira.append(story)

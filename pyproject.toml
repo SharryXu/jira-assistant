@@ -7,12 +7,14 @@ name = "jira-assistant"
 authors = [{ name = "Sharry Xu", email = "sharry.xu@outlook.com" }]
 description = "Useful Jira tools"
 readme = "README.rst"
-requires-python = ">=3.10"
+requires-python = ">=3.8"
 license = { file = "LICENSE" }
 classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Development Status :: 6 - Mature",
@@ -36,9 +38,11 @@ dependencies = [
     "requests >= 2.28.2",
     "jira >= 3.5.0",
     'tomli; python_version < "3.11"',
+    'importlib_resources; python_version < "3.8"',
+    'importlib_metadata; python_version < "3.8"',
     'requests-mock >= 1.10.0'
 ]
-version = "0.1.8"
+version = "0.1.9"
 
 [project.optional-dependencies]
 dev = ["pip-tools", "pytest", "pylint"]

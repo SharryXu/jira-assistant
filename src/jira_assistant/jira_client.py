@@ -3,7 +3,7 @@
 This module is used to store excel column definition information.
 """
 import warnings
-from typing import Any
+from typing import Any, Dict, List
 
 from jira import JIRA, JIRAError
 from urllib3 import disable_warnings
@@ -32,8 +32,8 @@ class JiraClient:
             return False
 
     def get_stories_detail(
-        self, story_ids: list[str], jira_fields: list[dict[str, str]]
-    ) -> "dict[str, dict[str, str]]":
+        self, story_ids: List[str], jira_fields: List[Dict[str, str]]
+    ) -> "Dict[str, Dict[str, str]]":
         final_result = {}
         batch_size = 200
 
@@ -43,8 +43,10 @@ class JiraClient:
                 end_index = batch_size
                 while end_index <= len(story_ids) and start_index < len(story_ids):
                     # print(f"Start: {start_index}, End: {end_index}")
-                    final_result = final_result | self._internal_get_stories_detail(
-                        story_ids[start_index:end_index], jira_fields
+                    final_result.update(
+                        self._internal_get_stories_detail(
+                            story_ids[start_index:end_index], jira_fields
+                        )
                     )
                     start_index = end_index
                     if start_index + batch_size < len(story_ids):
@@ -62,12 +64,12 @@ class JiraClient:
             return {}
 
     def _internal_get_stories_detail(
-        self, story_ids: list[str], jira_fields: list[dict[str, str]]
-    ) -> "dict[str, dict[str, str]]":
+        self, story_ids: List[str], jira_fields: List[Dict[str, str]]
+    ) -> "Dict[str, Dict[str, str]]":
         id_query = ",".join([f"'{str(story_id)}'" for story_id in story_ids])
 
         try:
-            search_result: dict[str, Any] = self.jira.search_issues(
+            search_result: Dict[str, Any] = self.jira.search_issues(
                 jql_str=f"id in ({id_query})",
                 maxResults=len(story_ids),
                 fields=[field["jira_name"] for field in jira_fields],

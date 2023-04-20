@@ -3,7 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 from functools import cmp_to_key
 from operator import attrgetter
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from dateutil import parser
 
@@ -154,7 +154,7 @@ class Story:
 
 
 class StoryFactory:
-    def __init__(self, columns: "list[ExcelDefinitionColumn]") -> None:
+    def __init__(self, columns: "List[ExcelDefinitionColumn]") -> None:
         if columns is None:
             raise ValueError("Columns must be provided!")
         self._columns = columns
@@ -162,7 +162,7 @@ class StoryFactory:
             self.__generate_inline_weights_compare_rules()
         )
 
-    def __generate_inline_weights_compare_rules(self) -> "list[tuple[str, int]]":
+    def __generate_inline_weights_compare_rules(self) -> "List[Tuple[str, int]]":
         rules = []
         for column in self._columns:
             if column["inline_weights"] > 0:
@@ -175,14 +175,14 @@ class StoryFactory:
         return self._columns
 
     @property
-    def inline_weights_compare_rules(self) -> "list[tuple[str, int]]":
+    def inline_weights_compare_rules(self) -> "List[Tuple[str, int]]":
         return self._inline_weight_compare_rules
 
     def create_story(self) -> Story:
         return Story(self)
 
 
-def sort_stories_by_inline_weights(stories: "list[Story]") -> "list[Story]":
+def sort_stories_by_inline_weights(stories: "List[Story]") -> "List[Story]":
     return sorted(
         stories, key=cmp_to_key(compare_story_based_on_inline_weights), reverse=True
     )
@@ -216,7 +216,7 @@ def compare_story_based_on_inline_weights(
         raise ValueError("The compare stories were built by different factory.")
 
     # story a and b have the same factory.
-    compare_rules: list[tuple[str, int]] = story_a.factory.inline_weights_compare_rules
+    compare_rules: List[Tuple[str, int]] = story_a.factory.inline_weights_compare_rules
 
     rules_count = len(compare_rules)
 
@@ -289,13 +289,13 @@ def compare_story_based_on_inline_weights(
 
 
 def sort_stories_by_property_and_order(
-    stories: "list[Story]", excel_definition: ExcelDefinition, config: dict
+    stories: "List[Story]", excel_definition: ExcelDefinition, config: dict
 ):
-    sort_rules: list[tuple[str, bool]] = []
+    sort_rules: List[Tuple[str, bool]] = []
     excel_definition_columns = excel_definition.get_columns()
 
     if "ParentScopeIndexRange" in config:
-        column_definitions: dict[int, ExcelDefinitionColumn] = {
+        column_definitions: Dict[int, ExcelDefinitionColumn] = {
             c["index"]: c for c in excel_definition_columns
         }
 
@@ -318,18 +318,18 @@ def sort_stories_by_property_and_order(
 
 
 def _internal_sort_stories_by_property_and_order(
-    stories: "list[Story]", sort_rules: "list[tuple[str, bool]]"
+    stories: "List[Story]", sort_rules: "List[Tuple[str, bool]]"
 ):
     for column_name, sort_order in reversed(sort_rules):
         stories.sort(key=attrgetter(column_name), reverse=sort_order)
 
 
 def _internal_sort_stories_by_property_and_order_considering_parent_range(
-    stories: "list[Story]",
-    story_columns: "dict[int, ExcelDefinitionColumn]",
-    sort_rules: "list[tuple[str, bool]]",
-    parent_level_index_range: "set[int]",
-) -> "list[Story]":
+    stories: "List[Story]",
+    story_columns: "Dict[int, ExcelDefinitionColumn]",
+    sort_rules: "List[Tuple[str, bool]]",
+    parent_level_index_range: "Set[int]",
+) -> "List[Story]":
     begin_index = 0
     end_index = 0
     while end_index <= len(stories) - 1:
@@ -362,11 +362,11 @@ def _internal_sort_stories_by_property_and_order_considering_parent_range(
 
 
 def sort_stories_by_raise_ranking(
-    stories: "list[Story]", excel_definition: ExcelDefinition, config: dict
-) -> "list[Story]":
+    stories: "List[Story]", excel_definition: ExcelDefinition, config: Dict
+) -> "List[Story]":
     if stories is None:
         return []
-    sort_rules: list[tuple[str, int]] = []
+    sort_rules: List[Tuple[str, int]] = []
     excel_definition_columns = excel_definition.get_columns()
 
     result = []
@@ -387,7 +387,7 @@ def sort_stories_by_raise_ranking(
 
         sort_rules.sort(key=lambda x: x[1], reverse=True)  # sort by scope_raise_ranking
 
-        column_definitions: dict[int, ExcelDefinitionColumn] = {
+        column_definitions: Dict[int, ExcelDefinitionColumn] = {
             c["index"]: c for c in excel_definition_columns
         }
 
@@ -419,8 +419,8 @@ def sort_stories_by_raise_ranking(
 
 
 def _internal_raise_story_ranking_by_property(
-    stories: "list[Story]", property_name: str
-) -> "list[Story]":
+    stories: "List[Story]", property_name: str
+) -> "List[Story]":
     if stories is None or len(stories) == 0:
         return stories
     # Use first story as example
@@ -430,11 +430,11 @@ def _internal_raise_story_ranking_by_property(
 
 
 def _internal_raise_story_ranking_by_property_considering_parent_level(
-    stories: "list[Story]",
-    story_columns: "dict[int, ExcelDefinitionColumn]",
-    sort_rules: "list[tuple[str, int]]",
-    parent_level_index_range: "set[int]",
-) -> "list[Story]":
+    stories: "List[Story]",
+    story_columns: "Dict[int, ExcelDefinitionColumn]",
+    sort_rules: "List[Tuple[str, int]]",
+    parent_level_index_range: "Set[int]",
+) -> "List[Story]":
     begin_index = 0
     end_index = 0
     while end_index <= len(stories) - 1:
@@ -466,11 +466,11 @@ def _internal_raise_story_ranking_by_property_considering_parent_level(
 
 # Only bool indicator for now
 def _raise_story_ranking_by_property(
-    stories: "list[Story]", property_name: str
-) -> "list[Story]":
+    stories: "List[Story]", property_name: str
+) -> "List[Story]":
     if not isinstance(getattr(stories[0], property_name), bool):
         return stories
-    result: list[Story] = [stories[0]] * len(stories)
+    result: List[Story] = [stories[0]] * len(stories)
     j = 0
     for story in stories:
         if getattr(story, property_name) is True:

@@ -1,4 +1,5 @@
 from decimal import Decimal
+from typing import List
 
 from pytest import raises
 
@@ -14,7 +15,7 @@ from jira_assistant.story import (
 )
 
 
-def mock_data() -> list[Story]:
+def mock_data() -> List[Story]:
     story_factory = StoryFactory(
         [
             ExcelDefinitionColumn(
