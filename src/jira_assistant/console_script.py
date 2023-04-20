@@ -7,12 +7,6 @@ import pathlib
 import sys
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from datetime import datetime
-
-try:
-    from importlib.resources import files
-except ImportError:
-    from importlib_resources import files
-
 from pathlib import Path
 from shutil import copyfile
 from typing import Optional
@@ -239,11 +233,9 @@ def _generate_timestamp_filename(prefix: str, extension: str) -> "Path":
 
 def _generate_excel_template(output_file: "Path") -> Optional[Path]:
     try:
-        print("Good1")
-        excel_definition = ExcelDefinition().load(
-            files("jira_assistant.assets").joinpath("excel_definition.json").read_text()
+        excel_definition = ExcelDefinition().load_file(
+            SRC_ASSETS / "excel_definition.json"
         )
-        print("Good2")
         output_to_excel_file(output_file, [], excel_definition)
         return output_file
     except Exception as e:

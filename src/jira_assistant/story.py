@@ -295,7 +295,7 @@ def sort_stories_by_property_and_order(
     excel_definition_columns = excel_definition.get_columns()
 
     if "ParentScopeIndexRange" in config:
-        column_definitions: dict[int, ExcelDefinitionColumn] = {
+        column_definitions: Dict[int, ExcelDefinitionColumn] = {
             c["index"]: c for c in excel_definition_columns
         }
 
@@ -366,7 +366,7 @@ def sort_stories_by_raise_ranking(
 ) -> "List[Story]":
     if stories is None:
         return []
-    sort_rules: list[tuple[str, int]] = []
+    sort_rules: List[Tuple[str, int]] = []
     excel_definition_columns = excel_definition.get_columns()
 
     result = []
@@ -387,7 +387,7 @@ def sort_stories_by_raise_ranking(
 
         sort_rules.sort(key=lambda x: x[1], reverse=True)  # sort by scope_raise_ranking
 
-        column_definitions: dict[int, ExcelDefinitionColumn] = {
+        column_definitions: Dict[int, ExcelDefinitionColumn] = {
             c["index"]: c for c in excel_definition_columns
         }
 
@@ -470,7 +470,7 @@ def _raise_story_ranking_by_property(
 ) -> "List[Story]":
     if not isinstance(getattr(stories[0], property_name), bool):
         return stories
-    result: list[Story] = [stories[0]] * len(stories)
+    result: List[Story] = [stories[0]] * len(stories)
     j = 0
     for story in stories:
         if getattr(story, property_name) is True:

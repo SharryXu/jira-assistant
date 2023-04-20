@@ -2,14 +2,14 @@ import pathlib
 from json import loads
 from json.decoder import JSONDecodeError
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 __all__ = ["SprintScheduleStore"]
 
 
 class SprintScheduleStore:
     def __init__(self) -> None:
-        self.store: list[tuple] = []
+        self.store: List[tuple] = []
 
     def load(self, content: str):
         """

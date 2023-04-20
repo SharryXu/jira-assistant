@@ -100,7 +100,7 @@ def read_excel_file(
             work_book.close()
             return ([], [])
 
-        columns: list[str] = []
+        columns: List[str] = []
 
         for column_index in range(1, column_count + 1):
             columns.append(str(sheet.cell(row=1, column=column_index).value))
@@ -347,7 +347,9 @@ def run_steps_and_sort_excel_file(
     sprint_schedule = SprintScheduleStore()
     if sprint_schedule_file is None:
         sprint_schedule.load(
-            files("jira_assistant.assets").joinpath("sprint_schedule.json").read_text()
+            files("jira_assistant.assets")
+            .joinpath("sprint_schedule.json")
+            .read_text(encoding="utf-8")
         )
         print("Using default sprint schedule...")
     else:
@@ -357,7 +359,9 @@ def run_steps_and_sort_excel_file(
     excel_definition = ExcelDefinition()
     if excel_definition_file is None:
         excel_definition.load(
-            files("jira_assistant.assets").joinpath("excel_definition.json").read_text()
+            files("jira_assistant.assets")
+            .joinpath("excel_definition.json")
+            .read_text(encoding="utf-8")
         )
         print("Using default excel definition...")
     else:
@@ -395,7 +399,7 @@ def run_steps_and_sort_excel_file(
                     break
 
             if need_call_jira_api:
-                stories_need_call_jira: list[Story] = []
+                stories_need_call_jira: List[Story] = []
                 for story in stories:
                     if story.need_sort:
                         stories_need_call_jira.append(story)

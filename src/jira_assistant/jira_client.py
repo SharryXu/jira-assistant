@@ -69,7 +69,7 @@ class JiraClient:
         id_query = ",".join([f"'{str(story_id)}'" for story_id in story_ids])
 
         try:
-            search_result: dict[str, Any] = self.jira.search_issues(
+            search_result: Dict[str, Any] = self.jira.search_issues(
                 jql_str=f"id in ({id_query})",
                 maxResults=len(story_ids),
                 fields=[field["jira_name"] for field in jira_fields],
