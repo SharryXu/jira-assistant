@@ -3,7 +3,7 @@
 This module is used to store excel column definition information.
 """
 import warnings
-from typing import Any
+from typing import Any, Dict, List
 
 from jira import JIRA, JIRAError
 from urllib3 import disable_warnings
@@ -32,7 +32,7 @@ class JiraClient:
             return False
 
     def get_stories_detail(
-        self, story_ids: list[str], jira_fields: list[dict[str, str]]
+        self, story_ids: List[str], jira_fields: List[Dict[str, str]]
     ) -> "dict[str, dict[str, str]]":
         final_result = {}
         batch_size = 200
