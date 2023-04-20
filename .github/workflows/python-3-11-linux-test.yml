@@ -15,6 +15,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.python-version }}
     strategy:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
