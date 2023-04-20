@@ -8,7 +8,6 @@ import sys
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
 from datetime import datetime
 from importlib.resources import files
-from importlib.util import find_spec
 from pathlib import Path
 from shutil import copyfile
 from typing import Optional
@@ -18,9 +17,6 @@ from dotenv import set_key
 
 from .excel_definition import ExcelDefinition
 from .excel_operation import output_to_excel_file, run_steps_and_sort_excel_file
-
-if not find_spec("ExceptionGroup"):
-    from exceptiongroup import ExceptionGroup
 
 __all__ = ["process_excel_file", "generate_template", "update_jira_info"]
 
@@ -166,10 +162,6 @@ def process_excel_file() -> None:
         )
 
         sys.exit(0)
-    except ExceptionGroup as e:
-        print(e.message)
-        for index, exp in enumerate(e.exceptions):
-            print(f"{index + 1}. {exp}")
     except Exception as e:
         print(e)
         sys.exit(1)

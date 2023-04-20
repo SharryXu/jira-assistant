@@ -6,7 +6,6 @@ import pathlib
 import re
 from copy import deepcopy
 from datetime import datetime
-from importlib.util import find_spec
 from json import loads
 from json.decoder import JSONDecodeError
 from pathlib import Path
@@ -15,9 +14,6 @@ from typing import Any, Optional, TypedDict, Union
 
 from .milestone import Milestone
 from .priority import Priority
-
-if not find_spec("ExceptionGroup"):
-    from exceptiongroup import ExceptionGroup
 
 __all__ = ["ExcelDefinition"]
 
@@ -269,10 +265,12 @@ class ExcelDefinition:
                     parse_errors.append(e.args[0])
 
         if parse_errors:
-            raise ExceptionGroup(
-                "The excel definition file has below issues need to be fixed:",
-                # Avoid duplicate error messages.
-                [SyntaxError(err) for err in set(parse_errors)],
+            # Avoid duplicate error messages.
+            parse_error_message = "\n".join(
+                [f"{index + 1}. {err}" for index, err in enumerate(set(parse_errors))]
+            )
+            raise SyntaxError(
+                f"The excel definition file has below issues need to be fixed:\n{parse_error_message}"
             )
 
         return self

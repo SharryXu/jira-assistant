@@ -1,12 +1,8 @@
 import pathlib
-from importlib.util import find_spec
 
 from pytest import raises
 
 from jira_assistant.excel_definition import ExcelDefinition
-
-if not find_spec("ExceptionGroup"):
-    from exceptiongroup import ExceptionGroup
 
 HERE = pathlib.Path(__file__).resolve().parent
 SRC_ASSETS = HERE.parent / "src/jira_assistant/assets"
@@ -96,17 +92,16 @@ class TestExcelDefinition:
     def test_validate_invalid_name(self):
         excel_definition_filename = TEST_ASSETS / "excel_definition_invalid_name.json"
         store = ExcelDefinition()
-        with raises(ExceptionGroup) as err:
+        with raises(SyntaxError) as err:
             store.load_file(excel_definition_filename)
 
         assert (
             "The excel definition file has below issues need to be fixed"
-            in err.value.message
+            in err.value.args[0]
         )
-        assert len(err.value.exceptions) == 1
         assert (
-            err.value.exceptions[0].args[0]
-            == "The Name property type in the column definition should be string."
+            "The Name property type in the column definition should be string."
+            in err.value.args[0]
         )
 
     def test_validate_invalid_raise_ranking(self):
@@ -143,17 +138,16 @@ class TestExcelDefinition:
     def test_validate_invalid_index(self):
         excel_definition_filename = TEST_ASSETS / "excel_definition_invalid_index.json"
         store = ExcelDefinition()
-        with raises(ExceptionGroup) as err:
+        with raises(SyntaxError) as err:
             store.load_file(excel_definition_filename)
 
         assert (
             "The excel definition file has below issues need to be fixed"
-            in err.value.message
+            in err.value.args[0]
         )
-        assert len(err.value.exceptions) == 1
         assert (
-            err.value.exceptions[0].args[0]
-            == "The Index property type in the column definition is not integer."
+            "The Index property type in the column definition is not integer."
+            in err.value.args[0]
         )
 
     def test_validate_index_not_continuation(self):
@@ -209,14 +203,11 @@ class TestExcelDefinition:
         )
         store = ExcelDefinition()
 
-        with raises(ExceptionGroup) as err:
+        with raises(SyntaxError) as err:
             store.load_file(excel_definition_filename)
 
         assert (
             "The excel definition file has below issues need to be fixed"
-            in err.value.message
+            in err.value.args[0]
         )
-        assert len(err.value.exceptions) == 1
-        assert (
-            err.value.exceptions[0].args[0] == "The pre-process step must have a name."
-        )
+        assert "The pre-process step must have a name." in err.value.args[0]
