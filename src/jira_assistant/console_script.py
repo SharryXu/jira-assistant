@@ -239,11 +239,10 @@ def _generate_timestamp_filename(prefix: str, extension: str) -> "Path":
 
 def _generate_excel_template(output_file: "Path") -> Optional[Path]:
     try:
+        print(files("jira_assistant.assets").joinpath("excel_definition.json"))
         excel_definition = ExcelDefinition().load(
             files("jira_assistant.assets").joinpath("excel_definition.json").read_text()
         )
-        print("Test")
-        print(output_file.absolute())
         output_to_excel_file(output_file, [], excel_definition)
         return output_file
     except Exception as e:
