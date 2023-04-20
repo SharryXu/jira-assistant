@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pathlib
 from json import load
 from re import IGNORECASE, search

@@ -11,7 +11,6 @@ from datetime import datetime
 from json import loads
 from json.decoder import JSONDecodeError
 from pathlib import Path
-from types import NoneType
 from typing import Any, Optional, TypedDict, Union
 
 from .milestone import Milestone
@@ -73,7 +72,7 @@ def parse_json_item_to_pre_process_step(json_item: Any) -> PreProcessStep:
 
 class SortStrategy(TypedDict):
     name: str
-    priority: int | NoneType
+    priority: Optional[int]
     enabled: bool
     config: dict
 
@@ -135,7 +134,7 @@ def parse_json_item_to_sort_strategy(json_item: Any) -> SortStrategy:
 class ExcelDefinitionColumn(TypedDict):
     index: int
     name: str
-    type: type | NoneType
+    type: Optional[type]
     require_sort: bool
     sort_order: bool
     scope_require_sort: bool
@@ -143,7 +142,7 @@ class ExcelDefinitionColumn(TypedDict):
     inline_weights: int
     raise_ranking: int
     scope_raise_ranking: int
-    jira_field_mapping: dict[str, str] | NoneType
+    jira_field_mapping: Optional[dict[str, str]]
 
 
 def parse_json_item_to_excel_definition_column(json_item: Any) -> ExcelDefinitionColumn:
