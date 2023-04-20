@@ -7,7 +7,7 @@ name = "jira-assistant"
 authors = [{ name = "Sharry Xu", email = "sharry.xu@outlook.com" }]
 description = "Useful Jira tools"
 readme = "README.rst"
-requires-python = ">=3.10"
+requires-python = ">=3.7"
 license = { file = "LICENSE" }
 classifiers = [
     "License :: OSI Approved :: MIT License",
