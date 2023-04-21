@@ -3,6 +3,7 @@ from os import environ, remove
 
 from mock_server import mock_jira_requests
 from requests_mock import Mocker
+from utils import read_stories_from_excel
 
 from jira_assistant.assistant import run_steps_and_sort_excel_file
 from jira_assistant.excel_definition import ExcelDefinition
@@ -101,13 +102,10 @@ class TestAssistant:
                 sprint_schedule_file=str(SRC_ASSETS / "sprint_schedule.json"),
             )
 
-            excel_definition = ExcelDefinition()
-            excel_definition.load_file(SRC_ASSETS / "excel_definition.json")
-            sprint_schedule = SprintScheduleStore()
-            sprint_schedule.load_file(SRC_ASSETS / "sprint_schedule.json")
-
-            _, stories = read_excel_file(
-                HERE / "files/happy_path_sorted.xlsx", excel_definition, sprint_schedule
+            stories = read_stories_from_excel(
+                HERE / "files/happy_path_sorted.xlsx",
+                SRC_ASSETS / "excel_definition.json",
+                SRC_ASSETS / "sprint_schedule.json",
             )
 
             false_value_begin = False
