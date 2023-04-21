@@ -14,8 +14,9 @@ from urllib.parse import ParseResult, urlparse
 
 from dotenv import set_key
 
+from .assistant import run_steps_and_sort_excel_file
 from .excel_definition import ExcelDefinition
-from .excel_operation import output_to_excel_file, run_steps_and_sort_excel_file
+from .excel_operation import output_to_excel_file
 
 __all__ = ["process_excel_file", "generate_template", "update_jira_info"]
 
