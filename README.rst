@@ -147,16 +147,19 @@ If you want to customize the definition file to adapt the new Excel, you can do 
               {
                   "Name": "FilterOutStoryWithoutId",
                   "Enabled": true,
+                  "Priority": 1,
                   "Config": {}
               },
               {
                   "Name": "RetrieveJiraInformation",
                   "Enabled": true,
+                  "Priority": 2,
                   "Config": {}
               },
               {
                   "Name": "FilterOutStoryBasedOnJiraStatus",
                   "Enabled": true,
+                  "Priority": 3,
                   "Config": {
                       "JiraStatuses": [
                           "SPRINT COMPLETE",

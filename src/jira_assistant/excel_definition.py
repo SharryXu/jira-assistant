@@ -28,12 +28,14 @@ RaiseRankingLevelScopeIndexValidationRule = re.compile(
 class PreProcessStep(TypedDict):
     name: str
     enabled: bool
+    priority: Optional[int]
     config: dict
 
 
 def parse_json_item_to_pre_process_step(json_item: Any) -> PreProcessStep:
     pre_process_step_name = ""
     pre_process_step_enabled = False
+    pre_process_step_priority = 0
     pre_process_step_config = {}
 
     for key, value in json_item.items():
@@ -55,6 +57,15 @@ def parse_json_item_to_pre_process_step(json_item: Any) -> PreProcessStep:
                 raise TypeError(
                     "The Enabled property type in the pre-process step should be boolean."
                 )
+        if key.lower() == "priority".lower():
+            if value is None:
+                pre_process_step_priority = 0
+            elif isinstance(value, int):
+                pre_process_step_priority = value
+            else:
+                raise TypeError(
+                    "The Priority property type in the pre-process step should be integer."
+                )
         if key.lower() == "config".lower():
             pre_process_step_config = {}
             if value is not None and isinstance(value, dict):
@@ -66,6 +77,7 @@ def parse_json_item_to_pre_process_step(json_item: Any) -> PreProcessStep:
     return PreProcessStep(
         name=pre_process_step_name,
         enabled=pre_process_step_enabled,
+        priority=pre_process_step_priority,
         config=pre_process_step_config,
     )
 
@@ -332,11 +344,28 @@ class ExcelDefinition:
         invalid_definitions = []
 
         # Validate PreProcessSteps
+        pre_process_step_priorities: List[int] = []
         for pre_process_step in self.pre_process_steps:
             if pre_process_step["name"].isspace() or len(pre_process_step["name"]) == 0:
                 invalid_definitions.append("The PreProcessStep name is invalid.")
                 # If strategy name is invalid, no need to check more.
                 continue
+
+            if (
+                pre_process_step["priority"] is None
+                or not isinstance(pre_process_step["priority"], int)
+                or pre_process_step["priority"] < 0
+            ):
+                invalid_definitions.append(
+                    f"The pre-process step priority is invalid. PreProcessStep: {pre_process_step['name']}"
+                )
+            else:
+                if pre_process_step["priority"] in pre_process_step_priorities:
+                    invalid_definitions.append(
+                        f"The pre-process step priority is duplicate. PreProcessStep: {pre_process_step['name']}"
+                    )
+                else:
+                    pre_process_step_priorities.append(pre_process_step["priority"])
 
             if "JiraStatuses".lower() in [
                 config_name.lower() for config_name in pre_process_step["config"].keys()
@@ -361,7 +390,7 @@ class ExcelDefinition:
         invalid_definitions = []
 
         # Validate Strategies
-        strategy_priorities: list[int] = []
+        strategy_priorities: List[int] = []
         for strategy in self.sort_strategies:
             if strategy["name"].isspace() or len(strategy["name"]) == 0:
                 invalid_definitions.append("The strategy name is invalid.")
@@ -377,7 +406,12 @@ class ExcelDefinition:
                     f"The strategy priority is invalid. Strategy: {strategy['name']}"
                 )
             else:
-                strategy_priorities.append(strategy["priority"])
+                if strategy["priority"] in strategy_priorities:
+                    invalid_definitions.append(
+                        f"The strategy priority is duplicate. Strategy: {strategy['name']}"
+                    )
+                else:
+                    strategy_priorities.append(strategy["priority"])
 
             if "ParentScopeIndexRange".lower() in [
                 config_name.lower() for config_name in strategy["config"].keys()
@@ -395,11 +429,6 @@ class ExcelDefinition:
                 invalid_definitions.append(
                     f"The format of the Parent Level Index Range is invalid. Strategy: {strategy['name']}. Supported format strings like: 1-20 or 20,30 or empty string."
                 )
-
-        if len(strategy_priorities) != len(set(strategy_priorities)):
-            invalid_definitions.append(
-                "The priority of strategies cannot be duplicate."
-            )
 
         return invalid_definitions
 
@@ -602,13 +631,14 @@ class ExcelDefinition:
         for pre_process_step in self.pre_process_steps:
             if pre_process_step["enabled"] == enabled:
                 result.append(deepcopy(pre_process_step))
+        result.sort(key=_sort_priority_map, reverse=False)
         return result
 
     def total_count(self):
         return len(self.columns)
 
 
-def _sort_priority_map(strategy: SortStrategy) -> int:
-    if strategy["priority"] is None or not isinstance(strategy["priority"], int):
+def _sort_priority_map(item: Any) -> int:
+    if item["priority"] is None or not isinstance(item["priority"], int):
         return 0
-    return strategy["priority"]
+    return item["priority"]

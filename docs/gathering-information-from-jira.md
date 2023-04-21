@@ -15,11 +15,13 @@ You need to prepare an excel definition file like below.
             {
                 "Name": "FilterOutStoryWithoutId",
                 "Enabled": true,
+                "Priority": 1,
                 "Config": {}
             },
             {
                 "Name": "RetrieveJiraInformation",
                 "Enabled": true,
+                "Priority": 2,
                 "Config": {}
             }
         ]

@@ -2,16 +2,19 @@
     {
         "PreProcessSteps": [
             {
+                "Priority": 1,
                 "Name": "FilterOutStoryWithoutId",
                 "Enabled": true,
                 "Config": {}
             },
             {
+                "Priority": 2,
                 "Name": "RetrieveJiraInformation",
                 "Enabled": true,
                 "Config": {}
             },
             {
+                "Priority": 3,
                 "Name": "FilterOutStoryBasedOnJiraStatus",
                 "Enabled": true,
                 "Config": {

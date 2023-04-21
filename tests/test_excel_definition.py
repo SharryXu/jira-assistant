@@ -211,3 +211,14 @@ class TestExcelDefinition:
             in err.value.args[0]
         )
         assert "The pre-process step must have a name." in err.value.args[0]
+
+    def test_validate_invalid_pre_process_step_priority(self):
+        excel_definition_filename = (
+            TEST_ASSETS / "excel_definition_invalid_pre_process_step_priority.json"
+        )
+        store = ExcelDefinition()
+
+        store.load_file(excel_definition_filename)
+        validation_result = store.validate()
+
+        assert len(validation_result) == 1
