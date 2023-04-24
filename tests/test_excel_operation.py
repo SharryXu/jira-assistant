@@ -4,7 +4,7 @@ from os import remove
 from utils import read_stories_from_excel
 
 from jira_assistant.excel_definition import ExcelDefinition
-from jira_assistant.excel_operation import output_to_csv_file, read_excel_file
+from jira_assistant.excel_operation import output_to_excel_file, read_excel_file
 from jira_assistant.sprint_schedule import SprintScheduleStore
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -24,16 +24,19 @@ class TestExcelOperation:
         assert len(columns) == 24
         assert len(stories) == 8
 
-    def test_output_to_csv_file(self):
+    def test_output_to_excel_file(self):
         stories = read_stories_from_excel(
             HERE / "files/happy_path.xlsx",
             SRC_ASSETS / "excel_definition.json",
             SRC_ASSETS / "sprint_schedule.json",
         )
 
-        output_to_csv_file(HERE / "files/happy_path.csv", stories)
+        output_to_excel_file(
+            HERE / "files/happy_path_direct_output.xlsx",
+            stories,
+            ExcelDefinition().load_file(SRC_ASSETS / "excel_definition.json"),
+        )
 
-        with open(HERE / "files/happy_path.csv", mode="r", encoding="utf-8") as file:
-            assert "," in file.readline()
+        assert (HERE / "files/happy_path_direct_output.xlsx").exists()
 
-        remove(HERE / "files/happy_path.csv")
+        remove(HERE / "files/happy_path_direct_output.xlsx")

@@ -18,7 +18,7 @@ from .excel_definition import ExcelDefinition
 from .sprint_schedule import SprintScheduleStore
 from .story import Story, StoryFactory
 
-__all__ = ["read_excel_file", "output_to_excel_file", "output_to_csv_file"]
+__all__ = ["read_excel_file", "output_to_excel_file"]
 
 # Currently, the openpyxl package will report an obsolete warning.
 warnings.simplefilter(action="ignore", category=UserWarning)
@@ -199,22 +199,3 @@ def output_to_excel_file(
 
     work_book.save(str(file))
     work_book.close()
-
-
-def output_to_csv_file(
-    file: Union[str, Path],
-    stories: "List[Story]",
-    over_write: bool = True,
-):
-    if file is None or not pathlib.Path(file).is_absolute():
-        raise ValueError("The file is invalid.")
-
-    if pathlib.Path(file).exists():
-        if over_write is True:
-            remove(file)
-        else:
-            raise ValueError(f"The csv file: {file} is already exist.")
-
-    with open(file, mode="x+", encoding="utf-8") as csv_file:
-        for story in stories:
-            csv_file.writelines([str(story)])
