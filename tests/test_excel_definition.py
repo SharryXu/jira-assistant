@@ -34,9 +34,12 @@ class TestExcelDefinition:
     def test_load_file_none(self):
         store = ExcelDefinition()
         file: str = None  # type: ignore
-        with raises(ValueError) as err:
+        with raises(FileNotFoundError) as err:
             store.load_file(file)
-        assert "invalid" in str(err.value)
+        assert (
+            "Please make sure the excel definition file exist and the path should be absolute"
+            in str(err.value)
+        )
 
     def test_iter(self):
         excel_definition_filename = SRC_ASSETS / "excel_definition.json"
@@ -211,3 +214,14 @@ class TestExcelDefinition:
             in err.value.args[0]
         )
         assert "The pre-process step must have a name." in err.value.args[0]
+
+    def test_validate_invalid_pre_process_step_priority(self):
+        excel_definition_filename = (
+            TEST_ASSETS / "excel_definition_invalid_pre_process_step_priority.json"
+        )
+        store = ExcelDefinition()
+
+        store.load_file(excel_definition_filename)
+        validation_result = store.validate()
+
+        assert len(validation_result) == 1
