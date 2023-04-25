@@ -17,6 +17,7 @@ from urllib3 import disable_warnings
 from .excel_definition import ExcelDefinition
 from .sprint_schedule import SprintScheduleStore
 from .story import Story, StoryFactory
+from .utils import is_absolute_path_valid
 
 __all__ = ["read_excel_file", "output_to_excel_file"]
 
@@ -51,12 +52,7 @@ def read_excel_file(
         A :py:class:`tuple` object which contains a list of column
         name and a list of :py:class:`Story`.
     """
-
-    if (
-        file is None
-        or not pathlib.Path(file).is_absolute()
-        or not pathlib.Path(file).exists()
-    ):
+    if not is_absolute_path_valid(file):
         raise FileNotFoundError(
             f"Please make sure the input excel file exist and the path should be absolute. File: {file}."
         )

@@ -4,7 +4,6 @@ This module is used to store excel column definition information.
 """
 from __future__ import annotations
 
-import pathlib
 import re
 from copy import deepcopy
 from datetime import datetime
@@ -15,6 +14,7 @@ from typing import Any, List, Optional, Set, TypedDict, Union
 
 from .milestone import Milestone
 from .priority import Priority
+from .utils import is_absolute_path_valid
 
 __all__ = ["ExcelDefinition"]
 
@@ -319,11 +319,7 @@ class ExcelDefinition:
             JSON file location
         """
 
-        if (
-            file is None
-            or not pathlib.Path(file).is_absolute()
-            or not pathlib.Path(file).exists()
-        ):
+        if not is_absolute_path_valid(file):
             raise FileNotFoundError(
                 f"Please make sure the excel definition file exist and the path should be absolute. File: {file}."
             )
