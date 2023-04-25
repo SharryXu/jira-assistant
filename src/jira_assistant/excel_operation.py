@@ -52,11 +52,14 @@ def read_excel_file(
         name and a list of :py:class:`Story`.
     """
 
-    if file is None or not pathlib.Path(file).is_absolute():
-        raise ValueError("The input excel file is invalid.")
-
-    if not pathlib.Path(file).exists():
-        raise ValueError(f"The input excel file: {file} cannot be found.")
+    if (
+        file is None
+        or not pathlib.Path(file).is_absolute()
+        or not pathlib.Path(file).exists()
+    ):
+        raise FileNotFoundError(
+            f"Please make sure the input excel file exist and the path should be absolute. File: {file}."
+        )
 
     with open(str(file), mode="rb") as raw_file:
         work_book: Workbook = openpyxl.load_workbook(
@@ -152,17 +155,18 @@ def output_to_excel_file(
         Whether or not the exist output file will be over-write.
     """
     if file is None or not pathlib.Path(file).is_absolute():
-        raise ValueError("The output file name is invalid.")
+        raise ValueError("The output file path is invalid.")
 
     if pathlib.Path(file).exists():
         if over_write is True:
             try:
                 remove(file)
             except PermissionError as e:
-                print(e)
-                return
+                raise FileExistsError(
+                    f"The exist excel file: {file} cannot be removed. {e.args[0]}"
+                ) from e
         else:
-            raise ValueError(f"The output excel file: {file} is already exist.")
+            raise FileExistsError(f"The output excel file: {file} is already exist.")
 
     work_book = openpyxl.Workbook(write_only=False)
 
