@@ -57,11 +57,14 @@ class SprintScheduleStore:
             JSON file location
         """
 
-        if file is None or not pathlib.Path(file).is_absolute():
-            raise ValueError("The file is invalid.")
-
-        if not pathlib.Path(file).exists():
-            raise ValueError(f"The file is not exist. File: {file}")
+        if (
+            file is None
+            or not pathlib.Path(file).is_absolute()
+            or not pathlib.Path(file).exists()
+        ):
+            raise FileNotFoundError(
+                f"Please make sure the sprint schedule file exist and the path should be absolute. File: {file}."
+            )
 
         with open(file=file, mode="r", encoding="utf-8") as schedule_file:
             try:

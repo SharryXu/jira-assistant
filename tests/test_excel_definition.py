@@ -34,9 +34,12 @@ class TestExcelDefinition:
     def test_load_file_none(self):
         store = ExcelDefinition()
         file: str = None  # type: ignore
-        with raises(ValueError) as err:
+        with raises(FileNotFoundError) as err:
             store.load_file(file)
-        assert "invalid" in str(err.value)
+        assert (
+            "Please make sure the excel definition file exist and the path should be absolute"
+            in str(err.value)
+        )
 
     def test_iter(self):
         excel_definition_filename = SRC_ASSETS / "excel_definition.json"

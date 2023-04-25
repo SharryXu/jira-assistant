@@ -91,11 +91,9 @@ def process_excel_file() -> None:
         )
 
         if args.output_folder is not None:
-            temp = pathlib.Path(args.output_folder).resolve()
-            if temp.is_dir():
-                output_folder_absolute_path = temp.absolute()
-            else:
-                output_folder_absolute_path = temp.parent.absolute()
+            output_folder_absolute_path = (
+                pathlib.Path(args.output_folder).resolve().absolute()
+            )
 
         if not output_folder_absolute_path.exists():
             output_folder_absolute_path.mkdir(parents=True, exist_ok=True)
@@ -129,24 +127,12 @@ def process_excel_file() -> None:
                 pathlib.Path.cwd() / args.excel_definition_file.as_posix()
             ).resolve()
 
-            if excel_definition_file_absolute_path.suffix.lower() != ".json":
-                print(
-                    f"Please provide an JSON file for Excel definition. File: {excel_definition_file_absolute_path}."
-                )
-                sys.exit(1)
-
         sprint_schedule_file_absolute_path = None
 
         if args.sprint_schedule_file is not None:
             sprint_schedule_file_absolute_path = pathlib.Path(
                 pathlib.Path.cwd() / args.sprint_schedule_file.as_posix()
             ).resolve()
-
-            if sprint_schedule_file_absolute_path.suffix.lower() != ".json":
-                print(
-                    f"Please provide an JSON file for sprint schedule. File: {sprint_schedule_file_absolute_path}."
-                )
-                sys.exit(1)
 
         # Over write parameter.
         over_write = True

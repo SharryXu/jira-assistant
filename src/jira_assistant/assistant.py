@@ -144,27 +144,27 @@ def run_steps_and_sort_excel_file(
     """
     sprint_schedule = SprintScheduleStore()
     if sprint_schedule_file is None:
+        print("Using default sprint schedule...")
         sprint_schedule.load(
             files("jira_assistant.assets")
             .joinpath("sprint_schedule.json")
             .read_text(encoding="utf-8")
         )
-        print("Using default sprint schedule...")
     else:
-        sprint_schedule.load_file(sprint_schedule_file)
         print("Using custom sprint schedule...")
+        sprint_schedule.load_file(sprint_schedule_file)
 
     excel_definition = ExcelDefinition()
     if excel_definition_file is None:
+        print("Using default excel definition...")
         excel_definition.load(
             files("jira_assistant.assets")
             .joinpath("excel_definition.json")
             .read_text(encoding="utf-8")
         )
-        print("Using default excel definition...")
     else:
-        excel_definition.load_file(excel_definition_file)
         print("Using custom excel definition...")
+        excel_definition.load_file(excel_definition_file)
 
     validation_result = excel_definition.validate()
     if len(validation_result) != 0:
