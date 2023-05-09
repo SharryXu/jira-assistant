@@ -8,6 +8,9 @@ from typing import Any, Dict, List
 from jira import JIRA, JIRAError
 from urllib3 import disable_warnings
 
+from .story import Story
+from .utils import JiraFieldTypeDefinition, get_jira_field_type
+
 # Currently, the openpyxl package will report an obsolete warning.
 warnings.simplefilter(action="ignore", category=UserWarning)
 # Disable the HTTPS certificate verification warning.
@@ -22,6 +25,7 @@ class JiraClient:
             timeout=20,
             options={"verify": False},
         )
+        self._field_cache: Dict[str, Dict[str, str]] = {}
 
     def health_check(self) -> bool:
         try:
@@ -30,6 +34,35 @@ class JiraClient:
             return False
         except JIRAError:
             return False
+
+    def create_storys(self, storys: List[Story]) -> "List[Story]":
+        # self.jira.create_issues(, prefetch=true)
+        return storys
+
+    def get_all_fields(self) -> "Dict[str, Dict[str, str]]":
+        if not self._field_cache:
+            for field in self.jira.fields():
+                temp = {
+                    "id": field["id"],
+                    "isArray": False,
+                }
+
+                if "schema" in field and "type" in field["schema"]:
+                    field_type: JiraFieldTypeDefinition | None = get_jira_field_type(
+                        field["schema"]["type"]
+                    )
+
+                    if field_type is not None:
+                        if field_type.get("isBasic", None) is True:
+                            temp["path"] = field["name"]
+                        elif field_type.get("isArray", None) is True:
+                            field_type = field["schema"]["items"]
+                            if field_type is not None:
+                                temp["isArray"] = True
+                        else:
+                            temp["path"] = ""
+                self._field_cache[field["name"]] = temp
+        return self._field_cache
 
     def get_stories_detail(
         self, story_ids: List[str], jira_fields: List[Dict[str, str]]

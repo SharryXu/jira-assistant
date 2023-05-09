@@ -5,7 +5,10 @@ from mock_server import mock_jira_requests
 from requests_mock import Mocker
 from utils import read_stories_from_excel
 
-from jira_assistant.assistant import run_steps_and_sort_excel_file
+from jira_assistant.assistant import (
+    generate_jira_field_mapping_file,
+    run_steps_and_sort_excel_file,
+)
 from jira_assistant.excel_definition import ExcelDefinition
 from jira_assistant.excel_operation import read_excel_file
 from jira_assistant.jira_client import JiraClient
@@ -119,3 +122,11 @@ class TestAssistant:
                     raise AssertionError
 
             remove(HERE / "files/happy_path_sorted.xlsx")
+
+    # def test_generate_jira_field_mapping_file(self):
+    #    output_file: pathlib.Path = HERE / "temp/jira_field_mapping.json"
+
+    #    assert generate_jira_field_mapping_file(output_file) is True
+    #    assert output_file.exists() is True
+
+    #    remove(output_file)

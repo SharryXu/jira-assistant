@@ -435,7 +435,7 @@ class ExcelDefinition:
         invalid_definitions = []
 
         # Validate the Columns
-        exist_story_id = False
+        exist_story_id_column = False
         exist_indexes = []
         exist_inline_weights = []
         for column in self.get_columns():
@@ -459,7 +459,7 @@ class ExcelDefinition:
                 continue
 
             if column_name.lower() == "StoryId".lower():
-                exist_story_id = True
+                exist_story_id_column = True
 
             # Check Missing/Duplicate Index
             if not isinstance(column_index, int):
@@ -565,7 +565,7 @@ class ExcelDefinition:
                         f"Jira Field Mapping has the invalid path. Column: {column_name}"
                     )
 
-        if len(self.columns) > 0 and exist_story_id is False:
+        if len(self.columns) > 0 and exist_story_id_column is False:
             invalid_definitions.append(
                 "Must have a column named StoryId so that program can identify the record."
             )

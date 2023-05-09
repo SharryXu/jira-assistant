@@ -6,7 +6,8 @@ try:
 except ImportError:
     from importlib_resources import files
 
-from os import environ
+from json import dump
+from os import environ, remove
 from pathlib import Path
 from typing import List, Optional, Union
 
@@ -24,9 +25,7 @@ from .story import (
     sort_stories_by_raise_ranking,
 )
 
-__all__ = [
-    "run_steps_and_sort_excel_file",
-]
+__all__ = ["run_steps_and_sort_excel_file", "generate_jira_field_mapping_file"]
 
 # Currently, the openpyxl package will report an obsolete warning.
 warnings.simplefilter(action="ignore", category=UserWarning)
@@ -37,9 +36,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 ASSETS = HERE / "assets"
 
 
-def _query_jira_information(
-    stories: List[Story], excel_definition: ExcelDefinition
-) -> bool:
+def _get_jira_client() -> Optional[JiraClient]:
     load_dotenv(ASSETS / ".env")
 
     jira_url: Optional[str] = environ.get("JIRA_URL", default=None)
@@ -47,7 +44,7 @@ def _query_jira_information(
         print(
             "The jira url is invalid. Please use the update-jira-info command to add/update url."
         )
-        return False
+        return None
 
     jira_acccess_token: Optional[str] = environ.get("JIRA_ACCESS_TOKEN", default=None)
     if (
@@ -58,7 +55,7 @@ def _query_jira_information(
         print(
             "The jira access token is invalid. Please use the update-jira-info command to add/update token."
         )
-        return False
+        return None
 
     jira_client = JiraClient(jira_url, jira_acccess_token)
 
@@ -66,9 +63,20 @@ def _query_jira_information(
         print(
             "The jira access token is revoked. Please use the update-jira-info command to add/update token."
         )
-        return False
+        return None
 
     print(f"Jira info: {jira_url}")
+
+    return jira_client
+
+
+def _query_jira_information(
+    stories: List[Story], excel_definition: ExcelDefinition
+) -> bool:
+    jira_client = _get_jira_client()
+
+    if jira_client is None:
+        return False
 
     jira_fields = []
 
@@ -258,3 +266,34 @@ def run_steps_and_sort_excel_file(
     )
 
     print(f"{output_file} has been saved.")
+
+
+def generate_jira_field_mapping_file(
+    file: Union[str, Path], over_write: bool = True
+) -> bool:
+    jira_client = _get_jira_client()
+
+    if jira_client is None:
+        return False
+
+    output_file: Path = Path(file).absolute()
+
+    if output_file.exists():
+        if over_write:
+            try:
+                remove(file)
+            except PermissionError as e:
+                raise FileExistsError(
+                    f"The exist jira field mapping file: {file} cannot be removed. {e.args[0]}"
+                ) from e
+        else:
+            raise FileExistsError(
+                f"The jira field mapping file: {file} is already exist."
+            )
+
+    with open(output_file, mode="x", encoding="utf-8") as f:
+        dump(jira_client.get_all_fields(), f)
+        f.flush()
+        f.close()
+
+    return True
