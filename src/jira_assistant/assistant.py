@@ -276,9 +276,9 @@ def generate_jira_field_mapping_file(
     if jira_client is None:
         return False
 
-    output_file: Path = Path(file).absolute()
+    output_file_path: Path = Path(file).absolute()
 
-    if output_file.exists():
+    if output_file_path.exists():
         if over_write:
             try:
                 remove(file)
@@ -291,9 +291,9 @@ def generate_jira_field_mapping_file(
                 f"The jira field mapping file: {file} is already exist."
             )
 
-    with open(output_file, mode="x", encoding="utf-8") as f:
-        dump(jira_client.get_all_fields(), f)
-        f.flush()
-        f.close()
+    with open(output_file_path, mode="x", encoding="utf-8") as output_file:
+        dump(jira_client.get_all_fields(), output_file)
+        output_file.flush()
+        output_file.close()
 
     return True

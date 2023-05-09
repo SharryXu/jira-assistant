@@ -3,7 +3,7 @@
 This module is used to store excel column definition information.
 """
 import warnings
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from jira import JIRA, JIRAError
 from urllib3 import disable_warnings
@@ -48,7 +48,7 @@ class JiraClient:
                 }
 
                 if "schema" in field and "type" in field["schema"]:
-                    field_type: JiraFieldTypeDefinition | None = get_jira_field_type(
+                    field_type: Optional[JiraFieldTypeDefinition] = get_jira_field_type(
                         field["schema"]["type"]
                     )
 
