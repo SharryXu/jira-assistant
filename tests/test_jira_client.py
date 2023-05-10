@@ -123,9 +123,14 @@ class TestJiraClient:
             )
             assert len(stories) == 0
 
-    # def test_get_all_fields(self):
-    #    client = JiraClient(os.environ["JIRA_URL"], os.environ["JIRA_ACCESS_TOKEN"])
+    def test_get_all_fields(self):
+        with Mocker(
+            real_http=False,
+            case_sensitive=False,
+            adapter=mock_jira_requests(),
+        ):
+            client = JiraClient(os.environ["JIRA_URL"], os.environ["JIRA_ACCESS_TOKEN"])
 
-    #    a = client.get_all_fields()
+            result = client.get_all_fields()
 
-    #    print(a)
+            assert len(result) == 2
