@@ -241,7 +241,7 @@ def _generate_jira_field_mapping_template(output_file: "Path") -> Optional[Path]
             return output_file
     except Exception as e:
         print(e)
-        return None
+    return None
 
 
 def get_args_for_update_jira_info() -> Namespace:
