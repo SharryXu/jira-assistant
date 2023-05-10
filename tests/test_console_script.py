@@ -1,6 +1,5 @@
 import pathlib
 from os import remove, walk
-from shutil import rmtree
 from subprocess import CalledProcessError, run
 
 import pytest
@@ -47,7 +46,7 @@ class TestConsoleScript:
         assert "xlsx has been saved" in result.stdout.decode("utf-8")
         assert (HERE / "temp/happy_path_sorted.xlsx").exists()
 
-        rmtree(HERE / "temp")
+        remove(HERE / "temp/happy_path_sorted.xlsx")
 
     def test_process_excel_file_run_twice(self):
         result = run(
