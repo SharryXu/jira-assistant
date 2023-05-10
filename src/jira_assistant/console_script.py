@@ -14,7 +14,7 @@ from urllib.parse import ParseResult, urlparse
 
 from dotenv import set_key
 
-from .assistant import run_steps_and_sort_excel_file
+from .assistant import generate_jira_field_mapping_file, run_steps_and_sort_excel_file
 from .excel_definition import ExcelDefinition
 from .excel_operation import output_to_excel_file
 
@@ -157,14 +157,15 @@ def get_args_for_generate_template() -> Namespace:
     parser = ArgumentParser(
         description="Jira tool: Used to generate templates",
         formatter_class=ArgumentDefaultsHelpFormatter,
+        allow_abbrev=False,
     )
 
     parser.add_argument(
         "template_type",
         metavar="template_type",
         type=str,
-        help="What kind of file template you want to generate. Choices: excel, excel-definition or sprint-schedule.",
-        choices=["excel", "excel-definition", "sprint-schedule"],
+        help="What kind of file template you want to generate. Choices: excel, excel-definition, sprint-schedule or jira-field-mapping.",
+        choices=["excel", "excel-definition", "sprint-schedule", "jira-field-mapping"],
     )
 
     return parser.parse_args()
@@ -194,6 +195,10 @@ def generate_template():
             result = copyfile(
                 SRC_ASSETS / "sprint_schedule.json",
                 _generate_timestamp_filename("sprint-schedule-template", ".json"),
+            )
+        elif template_type == "jira-field-mapping":
+            result = _generate_jira_field_mapping_template(
+                _generate_timestamp_filename("jira-field-mapping", ".json")
             )
         else:
             print(
@@ -230,10 +235,20 @@ def _generate_excel_template(output_file: "Path") -> Optional[Path]:
         return None
 
 
+def _generate_jira_field_mapping_template(output_file: "Path") -> Optional[Path]:
+    try:
+        if generate_jira_field_mapping_file(output_file):
+            return output_file
+    except Exception as e:
+        print(e)
+        return None
+
+
 def get_args_for_update_jira_info() -> Namespace:
     parser = ArgumentParser(
         description="Jira tool: Used to add/update jira url or access token.",
         formatter_class=ArgumentDefaultsHelpFormatter,
+        allow_abbrev=False,
     )
 
     parser.add_argument(
