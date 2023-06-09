@@ -1,7 +1,7 @@
 Jira Assistant - userful jira tools
 =============================================
 
-|pypi| |Download| |Package Size| |GithubIssues| |Linux| |Windows| |Mac OS| |Pylint| |CodeQL| |Documentation| |Codecov| |CodeClimate| |License|
+|pypi| |Download| |Package Size| |CodeFactor| |GithubIssues| |Linux| |Windows| |Mac OS| |Pylint| |CodeQL| |Documentation| |Codecov| |CodeClimate| |License|
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/jira-assistant.svg?style=flat-square
     :target https://pypi.org/project/jira-assistant/
@@ -50,6 +50,10 @@ Jira Assistant - userful jira tools
 .. |CodeClimate| image:: https://api.codeclimate.com/v1/badges/aeae36dcbb250784672b/maintainability
    :target: https://codeclimate.com/github/SharryXu/jira-assistant/maintainability
    :alt: Maintainability
+
+.. |CodeFactor| image:: https://www.codefactor.io/repository/github/sharryxu/jira-assistant/badge
+   :target: https://www.codefactor.io/repository/github/sharryxu/jira-assistant
+   :alt: CodeFactor
 
 .. |License| image:: https://img.shields.io/github/license/sharryxu/jira-assistant
    :target: https://img.shields.io/github/license/sharryxu/jira-assistant
