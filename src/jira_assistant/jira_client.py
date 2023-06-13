@@ -23,6 +23,10 @@ warnings.simplefilter(action="ignore", category=UserWarning)
 disable_warnings()
 
 
+def connect_field_path(path_a: str, path_b: str) -> str:
+    return path_a + "." + path_b
+
+
 class JiraClient:
     def __init__(self, url: str, access_token: str) -> None:
         self.jira = JIRA(
@@ -72,30 +76,93 @@ class JiraClient:
                     field_type_name
                 )
 
-                if field_type is not None:
-                    temp["path"] = self._query_all_properties(field, field_type)
+                path_list: List[str] = []
+                if field_type is not None and field_type.get("isBasic", None) is False:
+                    self._append_list(
+                        path_list,
+                        self._query_all_properties(field_type, field["id"]),
+                    )
+                else:
+                    # Usually, the format is like below:
+                    # "customfield_11005": {
+                    #     "self": "https://jira_server/rest/api/2/customFieldOption/11005",
+                    #     "value": "No",
+                    #     "id": "11005",
+                    #     "disabled": false
+                    # },
+                    path_list.append(connect_field_path(field["id"], "id"))
+                    path_list.append(connect_field_path(field["id"], "value"))
 
+                temp["path"] = path_list
                 self._field_cache[field["name"]] = temp
         return self._field_cache
 
     def _query_all_properties(
-        self, field: Dict[str, Any], field_type: JiraFieldTypeDefinition
+        self,
+        field_type: Optional[JiraFieldTypeDefinition],
+        root_path: str,
     ) -> List[str]:
-        result: List[str] = []
+        path_list: List[str] = []
+
+        if field_type is None:
+            return path_list
 
         if field_type.get("isBasic", None) is True:
-            result.append(field["name"])
+            self._append_str_to_list(path_list, field_type.get("name", ""))
         elif field_type.get("isArray", None) is True and "itemType" in field_type:
-            new_field_type = get_jira_field_type(field_type["itemType"])
-            if new_field_type is not None:
-                result += self._query_all_properties(field, new_field_type)
+            item_field_type = get_jira_field_type(field_type["itemType"])
+            if item_field_type is not None:
+                self._append_list(
+                    path_list,
+                    self._query_all_properties(
+                        item_field_type, item_field_type.get("name", "")
+                    ),
+                )
         elif "properties" in field_type:
             for child_field_type in field_type["properties"]:
-                result += self._query_all_properties(field, child_field_type)
+                if (
+                    child_field_type.get("isArray", None) is True
+                    and "itemType" in child_field_type
+                ):
+                    child_field = get_jira_field_type(child_field_type["itemType"])
+                else:
+                    child_field = get_jira_field_type(child_field_type["type"])
+
+                if child_field is not None:
+                    new_root_path = connect_field_path(
+                        root_path, child_field_type.get("name", "")
+                    )
+
+                    if child_field.get("isBasic") is True:
+                        path_list.append(new_root_path)
+                    elif (
+                        child_field.get("isArray", None) is True
+                        and "itemType" in child_field
+                    ):
+                        self._append_list(
+                            path_list,
+                            self._query_all_properties(
+                                get_jira_field_type(child_field["itemType"]),
+                                new_root_path,
+                            ),
+                        )
+                    else:
+                        self._append_list(
+                            path_list,
+                            self._query_all_properties(child_field, new_root_path),
+                        )
         else:
             pass
 
-        return result
+        return path_list
+
+    def _append_list(self, arr_a: List[str], arr_b: List[str]):
+        for item in arr_b:
+            arr_a.append(item)
+
+    def _append_str_to_list(self, arr: List[str], statement: str):
+        for i, _ in enumerate(arr):
+            arr[i] = connect_field_path(arr[i], statement)
 
     def get_stories_detail(
         self, story_ids: List[str], jira_fields: List[Dict[str, str]]

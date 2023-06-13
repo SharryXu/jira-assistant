@@ -133,4 +133,4 @@ class TestJiraClient:
 
             result = client.get_all_fields()
 
-            assert len(result) == 2
+            assert len(result) == 5

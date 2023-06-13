@@ -178,6 +178,20 @@ def mock_field_response(
         status_code=status_code,
         json=[
             {
+                "id": "customfield_14303",
+                "name": "Script Execution Order",
+                "custom": True,
+                "orderable": True,
+                "navigable": True,
+                "searchable": True,
+                "clauseNames": ["cf[14303]", "Script Execution Order"],
+                "schema": {
+                    "type": "string",
+                    "custom": "com.atlassian.jira.plugin.system.customfieldtypes:textarea",
+                    "customId": 14303,
+                },
+            },
+            {
                 "id": "status",
                 "name": "Status",
                 "custom": False,
@@ -186,6 +200,16 @@ def mock_field_response(
                 "searchable": True,
                 "clauseNames": ["status"],
                 "schema": {"type": "status", "system": "status"},
+            },
+            {
+                "id": "comment",
+                "name": "Comment",
+                "custom": False,
+                "orderable": True,
+                "navigable": False,
+                "searchable": True,
+                "clauseNames": ["comment"],
+                "schema": {"type": "comments-page", "system": "comment"},
             },
             {
                 "id": "customfield_15601",
@@ -200,6 +224,16 @@ def mock_field_response(
                     "custom": "com.atlassian.jira.plugin.system.customfieldtypes:select",
                     "customId": 15601,
                 },
+            },
+            {
+                "id": "description",
+                "name": "Description",
+                "custom": False,
+                "orderable": True,
+                "navigable": True,
+                "searchable": True,
+                "clauseNames": ["description"],
+                "schema": {"type": "string", "system": "description"},
             },
         ],
     )
